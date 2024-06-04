@@ -1,0 +1,12 @@
+# Tests should fail as snapshots are out of date.
+-> test
+# Edit the source file
+$ copy-file src/test/scala/SimpleTest.edited src/test/scala/SimpleTest.scala
+# Promotion should succeed, but not modify the file.
+> snapshot4sPromote
+# Tests should fail because patch was not promoted. New patches will be generated.
+-> test
+# Promotion should modify the file.
+> snapshot4sPromote
+# Tests should succeed.
+> test

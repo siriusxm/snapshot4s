@@ -1,0 +1,37 @@
+### Metals ###
+.metals/
+.bloop/
+**/metals.sbt
+*.semanticdb
+.idea/
+*~
+
+### SBT ###
+# Simple Build Tool
+# http://www.scala-sbt.org/release/docs/Getting-Started/Directories.html#configuring-version-control
+
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.history
+.cache
+.lib/
+
+### SBT Patch ###
+.bsp/
+
+### Scala ###
+*.class
+*.log
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+.vscode
+node_modules
+
+# ignore generated markdown files for the website, mdoc is the source of truth
+website/docs/*
