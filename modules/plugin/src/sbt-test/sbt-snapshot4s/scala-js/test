@@ -1,0 +1,10 @@
+# Generated code should link
+> Test / compile
+> Test / fastLinkJS
+> Test / fullLinkJS
+# Tests should fail as snapshots are out of date
+-> test
+# Update snapshots
+> snapshot4sPromote
+# Tests should succeed with updated snapshots
+> test
