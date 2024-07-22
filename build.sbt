@@ -36,14 +36,20 @@ def scalaReflect(scalaVersion: String): List[ModuleID] =
 
 inThisBuild(
   Seq(
-    scalaVersion     := scala3Version,
-    versionScheme    := Some("early-semver"),
-    organization     := "com.siriusxm",
-    tlBaseVersion    := "0.0",
-    tlFatalWarnings  := sys.env.get("GITHUB_ACTIONS").contains("true"),
-    tlJdkRelease     := Some(17),
-    organizationName := "SiriusXM",
-    startYear        := Some(2024),
+    scalaVersion  := scala3Version,
+    versionScheme := Some("early-semver"),
+    organization  := "com.siriusxm",
+    developers ++= List(
+      tlGitHubDev("miciek", "Michał Płachta"),
+      tlGitHubDev("majk-p", "Michał Pawlik"),
+      tlGitHubDev("zainab-ali", "Zainab Ali")
+    ),
+    githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
+    tlBaseVersion              := "0.0",
+    tlFatalWarnings            := sys.env.get("GITHUB_ACTIONS").contains("true"),
+    tlJdkRelease               := Some(17),
+    organizationName           := "SiriusXM",
+    startYear                  := Some(2024),
     licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"))
   )
 )
