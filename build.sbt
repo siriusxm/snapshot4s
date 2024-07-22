@@ -36,9 +36,14 @@ def scalaReflect(scalaVersion: String): List[ModuleID] =
 
 inThisBuild(
   Seq(
-    scalaVersion     := scala3Version,
-    versionScheme    := Some("early-semver"),
-    organization     := "com.siriusxm",
+    scalaVersion  := scala3Version,
+    versionScheme := Some("early-semver"),
+    organization  := "com.siriusxm",
+    developers ++= List(
+      tlGitHubDev("miciek", "Michał Płachta"),
+      tlGitHubDev("majk-p", "Michał Pawlik"),
+      tlGitHubDev("zainab-ali", "Zainab Ali")
+    ),
     tlBaseVersion    := "0.0",
     tlFatalWarnings  := sys.env.get("GITHUB_ACTIONS").contains("true"),
     tlJdkRelease     := Some(17),
