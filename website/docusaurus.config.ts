@@ -13,6 +13,7 @@ const config: Config = {
   // GitHub pages deployment config.
   organizationName: 'SiriusXM', // Usually your GitHub org/user name.
   projectName: 'snapshot4s', // Usually your repo name.
+  deploymentBranch: 'gh-pages',
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
