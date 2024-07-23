@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-      - publish-pages
     tags: ["*"]
   pull_request:
     paths:
