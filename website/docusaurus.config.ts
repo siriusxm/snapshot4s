@@ -8,11 +8,12 @@ const config: Config = {
   favicon: 'img/favicon.ico',
 
   url: 'https://siriusxm.github.io',
-  baseUrl: 'pages/ps-enablement/snapshot4s/',
+  baseUrl: '/snapshot4s/',
 
   // GitHub pages deployment config.
   organizationName: 'SiriusXM', // Usually your GitHub org/user name.
   projectName: 'snapshot4s', // Usually your repo name.
+  deploymentBranch: 'publish-pages',
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',

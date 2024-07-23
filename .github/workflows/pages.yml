@@ -1,0 +1,71 @@
+name: Deploy pages
+on:
+  push:
+    branches:
+      - main
+    tags: ["*"]
+  pull_request:
+    paths:
+      - docs/**
+      - website/**
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Run mdoc and build Docusaurus
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout working directory
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache-dependency-path: website/package-lock.json
+
+      - name: Install dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Setup Java (temurin@17)
+        id: setup-java-temurin-17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: sbt
+
+      - name: Run mdoc
+        run: sbt 'docs/mdoc'
+
+      - name: Build website
+        working-directory: website
+        run: npm run build
+      
+      - name: Upload Build Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: website/build
+
+  deploy:
+    name: Deploy pages
+    needs: build
+
+    permissions:
+      pages: write # to deploy to Pages
+      id-token: write # to verify the deployment originates from an appropriate source
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
