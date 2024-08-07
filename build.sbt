@@ -46,6 +46,7 @@ inThisBuild(
     ),
     githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
     tlBaseVersion              := "0.0",
+    tlUntaggedAreSnapshots     := false,
     tlFatalWarnings            := sys.env.get("GITHUB_ACTIONS").contains("true"),
     tlJdkRelease               := Some(17),
     organizationName           := "SiriusXM",
