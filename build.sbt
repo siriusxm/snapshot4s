@@ -1,7 +1,5 @@
 import com.typesafe.tools.mima.core.ProblemFilters
 import com.typesafe.tools.mima.core.*
-import org.typelevel.sbt.gha.RefPredicate
-import org.typelevel.sbt.gha.Ref
 import org.scalafmt.sbt.ScalafmtPlugin.{globalInstance => Scalafmt}
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
