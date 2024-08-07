@@ -74,15 +74,15 @@ jobs:
         run: sbt '++ ${{ matrix.scala }}' doc
 
       - name: Make target directories
-        if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/fix-publishing')
+        if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v'))
         run: mkdir -p modules/plugin/target modules/weaver/target/jvm-2.13 modules/hashing/target/jvm-3 modules/munit/target/jvm-2.12 modules/weaver/target/js-3 modules/munit/target/js-2.12 modules/core/target/jvm-2.12 modules/hashing/target/js-3 modules/hashing/target/jvm-2.12 modules/core/target/jvm-3 modules/munit/target/jvm-3 modules/weaver/target/js-2.13 modules/hashing/target/js-2.13 modules/core/target/js-2.13 modules/hashing/target/jvm-2.13 modules/core/target/js-2.12 modules/weaver/target/jvm-3 modules/munit/target/js-3 modules/weaver/target/js-2.12 modules/weaver/target/jvm-2.12 modules/munit/target/jvm-2.13 modules/munit/target/js-2.13 modules/core/target/jvm-2.13 modules/hashing/target/js-2.12 modules/core/target/js-3 project/target
 
       - name: Compress target directories
-        if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/fix-publishing')
+        if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v'))
         run: tar cf targets.tar modules/plugin/target modules/weaver/target/jvm-2.13 modules/hashing/target/jvm-3 modules/munit/target/jvm-2.12 modules/weaver/target/js-3 modules/munit/target/js-2.12 modules/core/target/jvm-2.12 modules/hashing/target/js-3 modules/hashing/target/jvm-2.12 modules/core/target/jvm-3 modules/munit/target/jvm-3 modules/weaver/target/js-2.13 modules/hashing/target/js-2.13 modules/core/target/js-2.13 modules/hashing/target/jvm-2.13 modules/core/target/js-2.12 modules/weaver/target/jvm-3 modules/munit/target/js-3 modules/weaver/target/js-2.12 modules/weaver/target/jvm-2.12 modules/munit/target/jvm-2.13 modules/munit/target/js-2.13 modules/core/target/jvm-2.13 modules/hashing/target/js-2.12 modules/core/target/js-3 project/target
 
       - name: Upload target directories
-        if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/fix-publishing')
+        if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v'))
         uses: actions/upload-artifact@v4
         with:
           name: target-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.scala }}
@@ -91,7 +91,7 @@ jobs:
   publish:
     name: Publish Artifacts
     needs: [build]
-    if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/fix-publishing')
+    if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v'))
     strategy:
       matrix:
         os: [ubuntu-latest]
