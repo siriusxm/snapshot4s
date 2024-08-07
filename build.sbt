@@ -1,5 +1,7 @@
 import com.typesafe.tools.mima.core.ProblemFilters
 import com.typesafe.tools.mima.core.*
+import org.typelevel.sbt.gha.RefPredicate
+import org.typelevel.sbt.gha.Ref
 import org.scalafmt.sbt.ScalafmtPlugin.{globalInstance => Scalafmt}
 
 Global / onChangedBuildSource := ReloadOnSourceChanges
@@ -45,12 +47,13 @@ inThisBuild(
       tlGitHubDev("zainab-ali", "Zainab Ali")
     ),
     githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
-    tlBaseVersion              := "0.0",
-    tlUntaggedAreSnapshots     := false,
-    tlFatalWarnings            := sys.env.get("GITHUB_ACTIONS").contains("true"),
-    tlJdkRelease               := Some(17),
-    organizationName           := "SiriusXM",
-    startYear                  := Some(2024),
+    githubWorkflowPublishTargetBranches += RefPredicate.Equals(Ref.Branch("main")),
+    tlBaseVersion          := "0.0",
+    tlUntaggedAreSnapshots := false,
+    tlFatalWarnings        := sys.env.get("GITHUB_ACTIONS").contains("true"),
+    tlJdkRelease           := Some(17),
+    organizationName       := "SiriusXM",
+    startYear              := Some(2024),
     licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"))
   )
 )
