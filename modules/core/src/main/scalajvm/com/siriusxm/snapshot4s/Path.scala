@@ -23,13 +23,17 @@ final class Path private[snapshot4s] (val osPath: os.Path) extends PathApi {
   private[snapshot4s] def write(contents: String): Unit =
     os.write.over(osPath, contents, createFolders = true)
 
-  private[snapshot4s] def relativeTo(baseDirectory: Path): RelPath =
-    new RelPath(osPath.relativeTo(baseDirectory.osPath))
+  private[snapshot4s] def relativeTo(baseDirectory: Path): Option[RelPath] =
+    if (osPath.startsWith(baseDirectory.osPath))
+      Some(new RelPath(osPath.relativeTo(baseDirectory.osPath)))
+    else None
 
   private[snapshot4s] def /(path: RelPath): Path =
     new Path(osPath / path.osPath)
 
   def exists(): Boolean = os.exists(osPath)
+
+  private[snapshot4s] def value: String = osPath.toString
 }
 
 object Path extends PathCompanionApi {

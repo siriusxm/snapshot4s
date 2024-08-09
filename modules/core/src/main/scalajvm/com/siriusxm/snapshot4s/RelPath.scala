@@ -16,7 +16,9 @@
 
 package snapshot4s
 
-private[snapshot4s] final class RelPath(val osPath: os.PathChunk)
+private[snapshot4s] final class RelPath(val osPath: os.PathChunk) extends RelPathApi {
+  private[snapshot4s] def value: String = osPath.toString
+}
 
 object RelPath extends RelPathCompanionApi {
   def apply(path: String): RelPath =

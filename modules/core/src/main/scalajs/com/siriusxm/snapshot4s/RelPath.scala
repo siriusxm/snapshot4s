@@ -16,7 +16,9 @@
 
 package snapshot4s
 
-private[snapshot4s] final class RelPath private (override val toString: String)
+private[snapshot4s] final class RelPath private (override val toString: String) extends RelPathApi {
+  private[snapshot4s] def value: String = toString
+}
 
 private[snapshot4s] object RelPath extends RelPathCompanionApi {
   def apply(path: String): RelPath = new RelPath(path)

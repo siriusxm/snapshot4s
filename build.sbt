@@ -107,8 +107,9 @@ lazy val core = (projectMatrix in file("modules/core"))
   .jvmPlatform(
     scalaVersions = scalaVersions,
     libraryDependencies += "com.lihaoyi" %% "os-lib" % Versions.oslib
+  ).jsPlatform(scalaVersions = scalaVersions,
+    Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
-  .jsPlatform(scalaVersions = scalaVersions)
 
 lazy val munit = (projectMatrix in file("modules/munit"))
   .settings(

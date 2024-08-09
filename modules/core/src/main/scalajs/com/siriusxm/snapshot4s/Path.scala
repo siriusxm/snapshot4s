@@ -42,14 +42,22 @@ final class Path private (override val toString: String) extends PathApi {
     )
   }
 
-  private[snapshot4s] def relativeTo(baseDirectory: Path): RelPath =
-    RelPath(facade.relative(baseDirectory.toString, toString))
+  private[snapshot4s] def relativeTo(baseDirectory: Path): Option[RelPath] = {
+    val text = facade.relative(baseDirectory.toString, toString)
+    if (text.startsWith("..")) {
+      None
+    } else {
+      Some(RelPath(text))
+    }
+  }
 
   private[snapshot4s] def /(path: RelPath): Path =
     Path(facade.join(toString, path.toString))
 
   private[snapshot4s] def exists(): Boolean =
     facade.exists(toString)
+
+  private[snapshot4s] def value: String = toString
 }
 
 object Path extends PathCompanionApi {

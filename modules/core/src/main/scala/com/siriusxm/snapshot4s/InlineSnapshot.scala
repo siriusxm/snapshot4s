@@ -84,13 +84,15 @@ object InlineSnapshot {
     changeFile.write(actualStr)
   }
 
-  private def relativeSourceFilePath(
+  private[snapshot4s] def relativeSourceFilePath(
       sourceFile: String,
       config: SnapshotConfig
   ): RelPath = {
     val baseDirectory  = config.sourceDirectory
     val sourceFilePath = Path(sourceFile)
-    sourceFilePath.relativeTo(baseDirectory)
+    sourceFilePath.relativeTo(baseDirectory).getOrElse {
+      throw new SnapshotConfigUnsupportedError(config)
+    }
   }
 
   // See the Scala 2.13 compiler for the source of the warning we're ignoring:
