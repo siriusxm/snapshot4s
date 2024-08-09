@@ -48,7 +48,7 @@ inThisBuild(
     ),
     githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
     githubWorkflowPublishTargetBranches += RefPredicate.Equals(Ref.Branch("main")),
-    tlBaseVersion          := "0.0",
+    tlBaseVersion          := "0.1",
     tlUntaggedAreSnapshots := false,
     tlFatalWarnings        := sys.env.get("GITHUB_ACTIONS").contains("true"),
     tlJdkRelease           := Some(17),
