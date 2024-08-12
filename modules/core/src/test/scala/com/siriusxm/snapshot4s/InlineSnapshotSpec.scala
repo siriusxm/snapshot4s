@@ -25,7 +25,7 @@ object InlineSnapshotSpec extends SimpleIOSuite {
     val result =
       IO(InlineSnapshot.relativeSourceFilePath("/path/to/sources/TestFile.scala", config))
     val message =
-      """Your project setup is not supported by snapshot4s. We encourage you to raise an issue at https://github.com/siriusxm/snapshot4s.
+      """Your project setup is not supported by snapshot4s. We encourage you to raise an issue at https://github.com/siriusxm/snapshot4s/issues/new?template=bug.md
 
 We have detected the following configuration:
   - sourceDirectory: /wrong/path/to/sources
