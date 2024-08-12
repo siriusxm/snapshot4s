@@ -73,10 +73,7 @@ object generated {
         snapshot4sDirectory.value / "inline-patch",
         (Test / sourceDirectory).value
       )
-    },
-    libraryDependencies ++= Seq(
-      "com.siriusxm" %% "snapshot4s-core" % BuildInfo.snapshot4sVersion % Test
-    )
+    }
   )
 
   private def applyResourcePatches(log: Logger)(resourcePatchDir: File, resourceDir: File) = {
