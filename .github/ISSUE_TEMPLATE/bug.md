@@ -3,6 +3,8 @@ name: 🐞Bug report
 about: Help us improve by reporting a bug.
 labels: bug
 title: "[Bug]: "
+assignees:
+  - siriusxm/snapshot4s-maintainers
 ---
 
 Thank you for reporting a bug with snapshot4s! We appreciate your time and patience.
@@ -10,6 +12,15 @@ Thank you for reporting a bug with snapshot4s! We appreciate your time and patie
 # The problem
 
 <-- Describe the problem. -->
+
+Please also provide the following information:
+ - snapshot4s version: <-- version -->
+ - SBT version: <-- version -->
+ - Scala version: <-- version -->
+ - Platform: <-- OS and distro -->
+ - Test framework: <-- weaver or munit -->
+ - Test framework version: <-- weaver or munit version -->
+ - Project type: <-- pure Scala, Scala.js, Scala Native, cross or project matrix -->
 
 # Steps to reproduce
 
