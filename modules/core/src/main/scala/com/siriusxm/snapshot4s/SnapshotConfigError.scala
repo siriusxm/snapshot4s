@@ -16,7 +16,7 @@
 
 package snapshot4s
 
-private final class SnapshotConfigUnsupportedError(config: SnapshotConfig) extends Throwable({
+private final class SnapshotConfigUnsupportedError(config: SnapshotConfig) extends Excepiton({
       s"""Your project setup is not supported by snapshot4s. We encourage you to raise an issue at https://github.com/siriusxm/snapshot4s.
 
 We have detected the following configuration:
