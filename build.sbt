@@ -107,7 +107,9 @@ lazy val core = (projectMatrix in file("modules/core"))
   .jvmPlatform(
     scalaVersions = scalaVersions,
     libraryDependencies += "com.lihaoyi" %% "os-lib" % Versions.oslib
-  ).jsPlatform(scalaVersions = scalaVersions,
+  )
+  .jsPlatform(
+    scalaVersions = scalaVersions,
     // module support is required to run tests
     Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
@@ -176,10 +178,7 @@ lazy val docs = project
     mdocIn                 := new File("docs/markdown/"),
     mdocOut                := new File("website/docs"),
     mdocVariables := Map(
-      "LATEST_STABLE_VERSION" -> {
-        if (isSnapshot.value && latestStableVersion.isDefined) latestStableVersion.get
-        else version.value
-      }
+      "LATEST_STABLE_VERSION" -> latestStableVersion.getOrElse(version.value)
     ),
     fork := false // Without this set to false mdoc would mess up it's paths and stop working
   )
