@@ -108,6 +108,7 @@ lazy val core = (projectMatrix in file("modules/core"))
     scalaVersions = scalaVersions,
     libraryDependencies += "com.lihaoyi" %% "os-lib" % Versions.oslib
   ).jsPlatform(scalaVersions = scalaVersions,
+    // module support is required to run tests
     Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
   )
 

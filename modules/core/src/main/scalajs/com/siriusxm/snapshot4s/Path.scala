@@ -44,7 +44,8 @@ final class Path private (override val toString: String) extends PathApi {
 
   private[snapshot4s] def relativeTo(baseDirectory: Path): Option[RelPath] = {
     val text = facade.relative(baseDirectory.toString, toString)
-    if (text.startsWith("..")) {
+    // Check that this path is in a subdirectory of the base directory.
+    if (text.startsWith("../")) {
       None
     } else {
       Some(RelPath(text))
