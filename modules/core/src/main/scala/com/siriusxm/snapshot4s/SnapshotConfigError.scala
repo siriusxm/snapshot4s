@@ -16,26 +16,12 @@
 
 package snapshot4s
 
-private[snapshot4s] trait PathApi {
+private final class SnapshotConfigUnsupportedError(config: SnapshotConfig) extends Exception({
+      s"""Your project setup is not supported by snapshot4s. We encourage you to raise an issue at https://github.com/siriusxm/snapshot4s.
 
-  private[snapshot4s] def read(): String
-  private[snapshot4s] def write(contents: String): Unit
-  private[snapshot4s] def relativeTo(baseDirectory: Path): Option[RelPath]
-  private[snapshot4s] def /(path: RelPath): Path
-
-  private[snapshot4s] def exists(): Boolean
-
-  private[snapshot4s] def value: String
-}
-
-trait PathCompanionApi {
-  def apply(path: String): Path
-}
-
-private[snapshot4s] trait RelPathApi {
-  private[snapshot4s] def value: String
-}
-
-private[snapshot4s] trait RelPathCompanionApi {
-  def apply(path: String): RelPath
-}
+We have detected the following configuration:
+  - sourceDirectory: ${config.sourceDirectory.value}
+  - resourceDirectory: ${config.resourceDirectory.value}
+  - outputDirectory: ${config.outputDirectory.value}
+"""
+    })
