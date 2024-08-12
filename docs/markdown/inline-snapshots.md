@@ -82,7 +82,7 @@ It should not be used on variables.
 ```scala mdoc:compile-only
 val personVariable = Person("Bob") 
 assertInlineSnapshot(found = Person("Alice"), personVariable) // Bad: personVariable will be replaced with Person("Alice")
-assertInlineSnapshot(found = Person("Alice"), Person("Bob"))  // Good: "Bob" be replaced with "Alice".
+assertInlineSnapshot(found = Person("Alice"), Person("Bob"))  // Good: "Bob" will be replaced with "Alice".
 ```
 
 It fails to compile for values that can't be represented as source code.
