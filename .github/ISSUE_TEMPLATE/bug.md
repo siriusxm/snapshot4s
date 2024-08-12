@@ -2,6 +2,7 @@
 name: 🐞Bug report
 about: Help us improve by reporting a bug.
 labels: bug
+title: "[Bug]: "
 ---
 
 Thank you for reporting a bug with snapshot4s! We appreciate your time and patience.
