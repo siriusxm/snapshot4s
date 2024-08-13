@@ -40,9 +40,9 @@ object MySuite extends weaver.SimpleIOSuite with SnapshotExpectations {
     val mySnapshotWorkflow = "snapshot4s"
     assertInlineSnapshot(mySnapshotWorkflow, ???)
   }
-  test("snapshot4s can update") {
-    val mySnapshotWorkflow = "snapshot4s"
-    assertInlineSnapshot(mySnapshotWorkflow, "A ton of manual copy/pasting")
+  test("snapshot4s can update code") {
+    val mySnapshotCode = List(1, 2, 3)
+    assertInlineSnapshot(mySnapshotCode, Nil)
   }
   test("snapshot4s can work with files") {
     val mySnapshotWorkflow = "snapshot4s"
@@ -86,9 +86,9 @@ object MySuite extends munit.FunSuite with SnapshotAssertions {
     val mySnapshotWorkflow = "snapshot4s"
     assertInlineSnapshot(mySnapshotWorkflow, ???)
   }
-  test("snapshot4s can update") {
-    val mySnapshotWorkflow = "snapshot4s"
-    assertInlineSnapshot(mySnapshotWorkflow, "A ton of manual copy/pasting")
+  test("snapshot4s can update code") {
+    val mySnapshotCode = List(1, 2, 3)
+    assertInlineSnapshot(mySnapshotCode, Nil)
   }
   test("snapshot4s can work with files") {
     val mySnapshotWorkflow = "snapshot4s"

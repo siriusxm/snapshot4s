@@ -42,9 +42,9 @@ object MySuite extends munit.FunSuite with SnapshotAssertions {
     val mySnapshotWorkflow = "snapshot4s"
     assertInlineSnapshot(mySnapshotWorkflow, ???)
   }
-  test("snapshot4s can update") {
-    val mySnapshotWorkflow = "snapshot4s"
-    assertInlineSnapshot(mySnapshotWorkflow, "A ton of manual copy/pasting")
+  test("snapshot4s can update code") {
+    val mySnapshotCode = List(1, 2, 3)
+    assertInlineSnapshot(mySnapshotCode, Nil)
   }
   test("snapshot4s can work with files") {
     val mySnapshotWorkflow = "snapshot4s"
@@ -53,15 +53,15 @@ object MySuite extends munit.FunSuite with SnapshotAssertions {
 }
 ```
 
-Run `test` and watch your test fail.
+Run `test` and watch your tests fail.
 Run `snapshot4sPromote` and be bedazzled. You should now see:
 ```scala mdoc:invisible
 import MySuite.*
 ```
 ```scala mdoc
-test("should use snapshot4s") {
-  val mySnapshotWorkflow = "snapshot4s"
-  assertInlineSnapshot(mySnapshotWorkflow, "snapshot4s") // <- spot the difference
+test("snapshot4s can update code") {
+  val mySnapshotCode = List(1, 2, 3)
+  assertInlineSnapshot(mySnapshotCode, List(1, 2, 3)) // <- spot the difference
 }
 ```
 
