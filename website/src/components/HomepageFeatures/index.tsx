@@ -67,6 +67,14 @@ export default function HomepageFeatures(): JSX.Element {
             <Feature key={idx} {...props} />
           ))}
         </div>
+        <div className="row">
+          <div className="text--center">
+            <Heading as="h2">See it in action 📸</Heading>
+            <video width="100%" height="auto" controls>
+              <source src="https://github.com/user-attachments/assets/8e2f3037-ecb0-4f6b-a9ba-fd277d2af55d"/>
+            </video>
+          </div>
+        </div>
       </div>
     </section>
   );
