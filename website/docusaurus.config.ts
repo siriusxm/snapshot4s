@@ -47,9 +47,9 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'snapshot4s plugin',
+      title: 'Snapshot4s',
       logo: {
-        alt: 'snapshot4s plugin logo',
+        alt: 'Snapshot4s logo',
         src: 'img/logo-small.png',
       },
       items: [
@@ -78,8 +78,12 @@ const config: Config = {
           title: 'Docs',
           items: [
             {
-              label: 'Tutorial',
+              label: 'Introduction',
               to: '/intro',
+            },
+            {
+              label: 'Quick start',
+              to: '/quick-start',
             },
           ],
         },
@@ -90,10 +94,6 @@ const config: Config = {
               label: 'Issues',
               href: 'https://github.com/SiriusXM/snapshot4s/issues',
             },
-            {
-              label: 'Discussions',
-              href: 'https://github.com/SiriusXM/snapshot4s/discussions',
-            }
           ],
         },
         {
