@@ -7,6 +7,8 @@ sidebar_position: 1
 
 `snapshot4s` is a tool that updates your tests on command.
 
+You can use it with `munit` and `weaver`. It supports tests in Scala 2, Scala 3 and Scala.js.
+
 A snapshot test is a unit test that asserts that a found value is equal to a previously snapshotted value.
 
 ```scala mdoc:invisible:reset

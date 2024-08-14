@@ -19,14 +19,10 @@ export default function HomepageFeatures(): JSX.Element {
             <div className="text">
               <Heading as="h2">See it in action</Heading>
               <p>
-              {/* TODO: write something meaningful before merge */}
-                Aut suscipit doloremque omnis pariatur. Similique ut incidunt totam. Earum distinctio nihil quasi eum occaecati deserunt.
-
-Eius rerum vitae eos repellat impedit ea. Nesciunt itaque qui et. Maxime consequatur rerum hic tempore necessitatibus quam id. Tempore dolore enim non ea autem.
-
-
-
+	      Snapshot4s automates the process of writing and updating tests, reducing the maintenance burden for developers.
               </p>
+	      <p>See what happens to <code>???</code> and the outdated test value on <code>snapshot4sPromote</code>. </p>
+	      <p><a href="./intro">Learn more.</a></p>
             </div>
           </div>
         </div>
