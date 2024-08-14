@@ -20,7 +20,7 @@ implicit val sourceloc: Location = Location.empty
 
 ```scala mdoc:invisible
 import snapshot4s.munit.SnapshotAssertions
-import snapshot4s.generated.snapshotConfig
+import snapshot4s.my_project.generated.snapshotConfig
 object MySuite extends munit.FunSuite with SnapshotAssertions
 import MySuite.*
 

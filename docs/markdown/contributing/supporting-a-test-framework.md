@@ -48,7 +48,7 @@ As an example, have a look at the integrations for [weaver](https://github.com/s
 Your users can then extend `CustomAssertions` in their own test suites:
 
 ```scala mdoc:compile-only
-import snapshot4s.generated.snapshotConfig
+import snapshot4s.my_project.generated.snapshotConfig
 
 class MySuite extends CustomAssertions {
     assertInlineSnapshot("found", ???)

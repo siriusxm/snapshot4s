@@ -2,7 +2,7 @@ package simple
 
 import weaver._
 import snapshot4s.weaver.SnapshotExpectations
-import snapshot4s.generated.snapshotConfig
+import snapshot4s.reject_outdated_patches.generated.snapshotConfig
 
 object SimpleTest extends SimpleIOSuite with SnapshotExpectations {
 

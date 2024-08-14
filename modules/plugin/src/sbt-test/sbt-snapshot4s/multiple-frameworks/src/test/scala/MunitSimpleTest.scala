@@ -1,7 +1,7 @@
 package simple
 
 import snapshot4s.munit.SnapshotAssertions
-import snapshot4s.generated._
+import snapshot4s.multiple_frameworks.generated._
 
 class MunitSimpleTest extends munit.FunSuite with SnapshotAssertions {
 

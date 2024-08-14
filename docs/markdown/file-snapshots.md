@@ -14,7 +14,7 @@ For example, to use a snapshot in `test/resources/snapshot/config.json`:
 
 ```scala mdoc:invisible
 import snapshot4s.weaver.SnapshotExpectations.*
-import snapshot4s.generated.snapshotConfig
+import snapshot4s.my_project.generated.snapshotConfig
 ```
 
 ```scala mdoc:compile-only

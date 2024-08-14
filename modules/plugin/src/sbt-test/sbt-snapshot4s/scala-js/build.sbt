@@ -2,6 +2,7 @@ import snapshot4s.BuildInfo.snapshot4sVersion
 
 lazy val root = (project in file("."))
   .settings(
+    name         := "scala-js",
     scalaVersion := "3.3.1",
     Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) },
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),

@@ -13,7 +13,9 @@ addSbtPlugin("com.siriusxm" % "sbt-snapshot4s" % "@LATEST_STABLE_VERSION@")
 Enable it in `build.sbt`.
 
 ```scala
-val root = (project in file(".")).enablePlugins(Snapshot4sPlugin)
+val root = (project in file("."))
+  .enablePlugins(Snapshot4sPlugin)
+  .settings(name := "my-project")
 ```
 
 Add the integration library for your test framework. See [supported frameworks](supported-frameworks.md) for more.
@@ -35,7 +37,7 @@ implicit val sourceloc: Location = Location.empty
 
 ```scala mdoc
 import snapshot4s.munit.SnapshotAssertions
-import snapshot4s.generated.snapshotConfig
+import snapshot4s.my_project.generated.snapshotConfig
 
 object MySuite extends munit.FunSuite with SnapshotAssertions {
   test("snapshot4s can fill in the blanks") {

@@ -10,7 +10,7 @@ You can use it to update values, such as case classes or sealed traits.
 
 ```scala mdoc:invisible
 import snapshot4s.weaver.SnapshotExpectations.*
-import snapshot4s.generated.snapshotConfig
+import snapshot4s.my_project.generated.snapshotConfig
 ```
 
 ```scala mdoc:silent

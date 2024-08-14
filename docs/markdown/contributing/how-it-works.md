@@ -37,5 +37,5 @@ The `snapshot4sPromote` task overwrites the original file.
 The `SnapshotConfig` data structure contains various pieces of build info needed at runtime, such as the location of the `resource` and `target` directory. An implicit `SnapshotConfig` value is generated using a SBT source generator in the `Snapshot4sPlugin`. It can be imported with:
 
 ```scala
-import snapshot4s.generated.snapshotConfig
+import snapshot4s.my_project.generated.snapshotConfig
 ```

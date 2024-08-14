@@ -33,7 +33,7 @@ Extend the `SnapshotExpectations` trait and import `snapshot4s.generated.*`.
 
 ```scala mdoc
 import snapshot4s.weaver.SnapshotExpectations
-import snapshot4s.generated.*
+import snapshot4s.my_project.generated.*
 
 object MySuite extends weaver.SimpleIOSuite with SnapshotExpectations {
   test("snapshot4s can fill in the blanks") {
@@ -79,7 +79,7 @@ implicit val sourceloc: Location = Location.empty
 
 ```scala mdoc
 import snapshot4s.munit.SnapshotAssertions
-import snapshot4s.generated.*
+import snapshot4s.my_project.generated.*
 
 object MySuite extends munit.FunSuite with SnapshotAssertions {
   test("snapshot4s can fill in the blanks") {
