@@ -4,8 +4,9 @@ sidebar_position: 3
 # Supported frameworks
 
 `snapshot4s` comes with out of the box integrations for:
- - `weaver` via `snapshot4s-weaver`
- - `munit` via `snapshot4s-munit`
+ - Weaver via `snapshot4s-weaver`
+ - MUnit via `snapshot4s-munit`
+ - ScalaTest via `snapshot4s-scalatest`
 
 All integrations support Scala.js.
 
@@ -96,4 +97,45 @@ object MySuite extends munit.FunSuite with SnapshotAssertions {
   }
 }
 ```
+
+## ScalaTest
+Add the `snapshot4s-scalatest` dependency to your `build.sbt`.
+
+```scala
+import snapshot4s.BuildInfo.snapshot4sVersion
+
+libraryDependencies += "com.siriusxm" %% "snapshot4s-scalatest" % snapshot4sVersion % Test
+```
+
+For Scala.js, use `%%%` and [emit a module][Scala.js modules].
+```scala
+import snapshot4s.BuildInfo.snapshot4sVersion
+
+libraryDependencies += "com.siriusxm" %%% "snapshot4s-scalatest" % snapshot4sVersion % Test
+Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+```
+
+Extend the `SnapshotAssertions` trait and import `snapshot4s.generated.*`.
+
+```scala mdoc:reset
+import org.scalatest.flatspec.AnyFlatSpec
+import snapshot4s.scalatest.SnapshotAssertions
+import snapshot4s.generated.*
+
+class MySuite extends AnyFlatSpec with SnapshotAssertions {
+  "snapshot4s" should "fill in the blanks" in {
+    val mySnapshotWorkflow = "snapshot4s"
+    assertInlineSnapshot(mySnapshotWorkflow, ???)
+  }
+  it should "update code" in {
+    val mySnapshotCode = List(1, 2, 3)
+    assertInlineSnapshot(mySnapshotCode, Nil)
+  }
+  it should "work with files" in {
+    val mySnapshotWorkflow = "snapshot4s"
+    assertFileSnapshot(mySnapshotWorkflow, "mySnapshotWorkflow")
+  }
+}
+```
+
 [Scala.js modules]: https://www.scala-js.org/doc/project/module.html
