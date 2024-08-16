@@ -5,9 +5,7 @@ lazy val root = (project in file("."))
     scalaVersion       := "3.3.1",
     crossScalaVersions := Seq("3.3.1", "2.12.19", "2.13.14"),
     libraryDependencies ++= Seq(
-      "com.siriusxm"  %% "snapshot4s-weaver"    % snapshot4sVersion % Test,
       "com.siriusxm"  %% "snapshot4s-scalatest" % snapshot4sVersion % Test,
-      "com.siriusxm"  %% "snapshot4s-munit"     % snapshot4sVersion % Test,
       "org.scalatest" %% "scalatest"            % "3.2.19"          % Test
     )
   )

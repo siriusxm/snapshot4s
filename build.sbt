@@ -140,10 +140,23 @@ lazy val weaver = (projectMatrix in file("modules/weaver"))
   .jvmPlatform(scalaVersions = scalaVersions)
   .jsPlatform(scalaVersions = scalaVersions)
 
+lazy val scalatest = (projectMatrix in file("modules/scalatest"))
+  .settings(
+    name := "snapshot4s-scalatest",
+    libraryDependencies ++= Seq(
+      "org.scalatest"       %%% "scalatest-core" % Versions.scalatest,
+      "com.disneystreaming" %%% "weaver-cats"    % Versions.weaver % Test
+    ),
+    mimaPreviousArtifacts := Set.empty
+  )
+  .dependsOn(core)
+  .jvmPlatform(scalaVersions = scalaVersions)
+  .jsPlatform(scalaVersions = scalaVersions)
+
 // This filter finds the libraries required by the scripted tests.
 lazy val scriptedScopeFilter = ScopeFilter(
   inProjects(
-    Seq(hashing, core, weaver, munit).flatMap(_.projectRefs): _*
+    Seq(hashing, core, weaver, munit, scalatest).flatMap(_.projectRefs): _*
   )
 )
 
@@ -180,9 +193,15 @@ lazy val docs = project
     mdocVariables := Map(
       "LATEST_STABLE_VERSION" -> latestStableVersion.getOrElse(version.value)
     ),
-    fork := false // Without this set to false mdoc would mess up it's paths and stop working
+    fork := false, // Without this set to false mdoc would mess up it's paths and stop working
+    libraryDependencies += "org.scalatest" %%% "scalatest" % Versions.scalatest
   )
-  .dependsOn(core.jvm(scala3Version), weaver.jvm(scala3Version), munit.jvm(scala3Version))
+  .dependsOn(
+    core.jvm(scala3Version),
+    weaver.jvm(scala3Version),
+    munit.jvm(scala3Version),
+    scalatest.jvm(scala3Version)
+  )
   .enablePlugins(MdocPlugin, NoPublishPlugin)
 
 addCommandAlias(

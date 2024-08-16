@@ -6,8 +6,9 @@ sidebar_position: 2
 ## Supported test frameworks
 
 `snapshot4s` comes with out of the box integrations for:
- - `weaver` via `snapshot4s-weaver`
- - `munit` via `snapshot4s-munit`
+ - Weaver via `snapshot4s-weaver`
+ - MUnit via `snapshot4s-munit`
+ - ScalaTest via `snapshot4s-scalatest`
 
 If you use a different test framework, you can easily develop your own integration.
 
