@@ -51,7 +51,7 @@ inThisBuild(
     tlBaseVersion          := "0.1",
     tlUntaggedAreSnapshots := false,
     tlFatalWarnings        := sys.env.get("GITHUB_ACTIONS").contains("true"),
-    tlJdkRelease           := Some(17),
+    tlJdkRelease           := Some(8),
     organizationName       := "SiriusXM",
     startYear              := Some(2024),
     licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"))
