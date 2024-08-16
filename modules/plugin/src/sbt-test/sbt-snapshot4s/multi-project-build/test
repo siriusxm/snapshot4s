@@ -3,19 +3,8 @@
 # All test code should compile too
 > Test / compile
 # Tests should fail because snapshots are out of date
--> core / test
--> utils / test
--> framework / test
+-> test
 # Update snapshots
 > snapshot4sPromote
 # Tests should succeed
-> core / test
-> utils / test
-> framework / test
-# Extra test should fail because snapshot config is incorrect
-# BUG: This generates patch files and stores them in core's target directory
--> extra / test
-# Update the core tests with incorrect patches
-> snapshot4sPromote
-# BUG: Core tests now fail because incorrect patches were applied
--> core / test
+> test
