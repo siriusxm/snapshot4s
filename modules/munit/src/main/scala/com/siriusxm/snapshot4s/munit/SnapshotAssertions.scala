@@ -18,11 +18,7 @@ package snapshot4s.munit
 
 import _root_.munit.Location
 
-import snapshot4s.{
-  ResultLike,
-  SnapshotAssertions as CoreSnapshotAssertions,
-  SnapshotEq
-}
+import snapshot4s.{ResultLike, SnapshotAssertions as CoreSnapshotAssertions, SnapshotEq}
 
 trait SnapshotAssertions extends CoreSnapshotAssertions[Unit] {
 
