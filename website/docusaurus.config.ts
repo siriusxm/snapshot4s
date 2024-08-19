@@ -111,7 +111,7 @@ const config: Config = {
     prism: {
       additionalLanguages: ['java', 'scala'],
       theme: prismThemes.github,
-      darkTheme: prismThemes.vsDark,
+      darkTheme: prismThemes.oneDark,
     },
   } satisfies Preset.ThemeConfig,
 };
