@@ -10,7 +10,7 @@ You can enable `snapshot4s` for a variety of SBT project layouts.
  - For multi-project SBT builds follow [these instructions](#multi-project-builds)
  - For `sbt-projectmatrix` follow [these instructions](#sbt-projectmatrix).
 
-snapshot4s does not yet support `sbt-crossproject` or `sbt-typelevel`.
+snapshot4s does not yet support `sbt-crossproject` or `sbt-typelevel`. These are [on our roadmap](https://github.com/siriusxm/snapshot4s/issues/28).
 
 ## Single project builds
 
@@ -36,7 +36,7 @@ val utils = (project in file("utils")).enablePlugins(Snapshot4sPlugin)
 val root = (project in file(".")).aggregate(core, utils)
 ```
 
-Finally, add your [framework](./supported-frameworks.md).
+Finally, add the integration library for your [test framework](./supported-frameworks.md).
 
 ## sbt-projectmatrix
 
@@ -54,4 +54,4 @@ Enable it for each matrix in `build.sbt`.
 val core = (projectMatrix in file("core")).enablePlugins(Snapshot4sPlugin)
 ```
 
-Finally, add your [framework](./supported-frameworks.md).
+Finally, add the integration library for your [test framework](./supported-frameworks.md).

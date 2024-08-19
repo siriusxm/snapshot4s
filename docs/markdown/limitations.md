@@ -16,6 +16,8 @@ This page is a shortlist of the known limitations of snapshot4s. If you encounte
 
 It should support all other project layouts, such as `sbt-projectmatrix`.
 
+Support for `sbt-crossproject` is [on our roadmap](https://github.com/siriusxm/snapshot4s/issues/28).
+
 ## Promoted code may fail to compile with `not found` errors
 
 `snapshot4s` uses `pprint` to efficiently generate the source code corresponding to an expected value.  This doesn’t add import statements for `enum` and classes within objects. You may need to add an import statement corresponding to the `enum` or object in question.
