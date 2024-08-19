@@ -1,5 +1,5 @@
 ---
-sidebar_position: 6
+sidebar_position: 7
 ---
 
 # Known limitations
@@ -15,6 +15,8 @@ This page is a shortlist of the known limitations of snapshot4s. If you encounte
 `snapshot4s` doesn't yet support the `CrossType.Pure` project layout of `sbt-crossproject`. This means that projects using `sbt-typelevel` are also not supported.
 
 It should support all other project layouts, such as `sbt-projectmatrix`.
+
+Support for `sbt-crossproject` is [on our roadmap](https://github.com/siriusxm/snapshot4s/issues/28).
 
 ## Promoted code may fail to compile with `not found` errors
 

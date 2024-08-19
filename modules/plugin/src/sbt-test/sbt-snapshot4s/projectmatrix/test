@@ -1,0 +1,7 @@
+# Tests should fail because snapshots are out of date.
+# The test run will create duplicate patches because each source file contains tests for several platforms.
+-> test
+# snapshot4sPromote should not attempt to apply duplicate patches. It should resolve the correct source file for each patch.
+> snapshot4sPromote
+# Tests should pass because patches have been correctly applied.
+> test

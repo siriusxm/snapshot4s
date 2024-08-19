@@ -1,0 +1,10 @@
+# All code should compile
+> compile
+# All test code should compile too
+> Test / compile
+# Tests should fail because snapshots are out of date
+-> test
+# Update snapshots
+> snapshot4sPromote
+# Tests should succeed
+> test

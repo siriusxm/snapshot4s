@@ -10,7 +10,7 @@ Add the plugin to `plugins.sbt`.
 addSbtPlugin("com.siriusxm" % "sbt-snapshot4s" % "@LATEST_STABLE_VERSION@")
 ```
 
-Enable it in `build.sbt`.
+Enable it in `build.sbt`. See [SBT setup](sbt-setup.md) for more layouts.
 
 ```scala
 val root = (project in file(".")).enablePlugins(Snapshot4sPlugin)
