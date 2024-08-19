@@ -48,6 +48,8 @@ inThisBuild(
     ),
     githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
     githubWorkflowPublishTargetBranches += RefPredicate.Equals(Ref.Branch("main")),
+    ThisBuild / githubWorkflowBuild += WorkflowStep
+      .Run(List("sbt scripted"), name = Some("Scripted tests")),
     tlBaseVersion          := "0.1",
     tlUntaggedAreSnapshots := false,
     tlFatalWarnings        := sys.env.get("GITHUB_ACTIONS").contains("true"),
