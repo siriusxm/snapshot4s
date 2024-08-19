@@ -70,7 +70,8 @@ lazy val allModules: Seq[ProjectReference] = Seq(
   hashing.projectRefs,
   core.projectRefs,
   weaver.projectRefs,
-  munit.projectRefs
+  munit.projectRefs,
+  scalatest.projectRefs
 ).flatten
 
 lazy val pluginSettings = Seq(
