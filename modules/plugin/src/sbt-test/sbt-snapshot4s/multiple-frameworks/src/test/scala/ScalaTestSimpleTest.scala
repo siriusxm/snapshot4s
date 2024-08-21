@@ -2,7 +2,7 @@ package simple
 
 import org.scalatest.flatspec.AnyFlatSpec
 import snapshot4s.scalatest.SnapshotAssertions
-import snapshot4s.generated._
+import snapshot4s.generated.*
 
 class SimpleTest extends AnyFlatSpec with SnapshotAssertions {
 

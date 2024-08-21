@@ -1,8 +1,8 @@
 package simple
 
-import weaver._
+import weaver.*
 import snapshot4s.weaver.SnapshotExpectations
-import snapshot4s.generated._
+import snapshot4s.generated.*
 
 object WeaverSimpleTest extends SimpleIOSuite with SnapshotExpectations {
 
