@@ -1,8 +1,8 @@
 package framework
 
-import weaver._
+import weaver.*
 import snapshot4s.weaver.SnapshotExpectations
-import snapshot4s.generated._
+import snapshot4s.generated.*
 
 object FrameworkTest extends SimpleIOSuite with SnapshotExpectations {
 
