@@ -7,6 +7,7 @@ lazy val scalaVersions   = Seq(scala3Version, scala213Version, scala212Version)
 
 lazy val core = (projectMatrix in file("core"))
   .settings(
+    scalacOptions       += "-Xsource:3",
     libraryDependencies += "com.siriusxm" %%% "snapshot4s-weaver" % snapshot4sVersion % Test
   )
   .jvmPlatform(scalaVersions = scalaVersions)
