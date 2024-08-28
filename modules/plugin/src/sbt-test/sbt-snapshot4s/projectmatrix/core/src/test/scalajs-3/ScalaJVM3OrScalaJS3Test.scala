@@ -1,8 +1,8 @@
 package core
 
-import weaver._
+import weaver.*
 import snapshot4s.weaver.SnapshotExpectations
-import snapshot4s.generated._
+import snapshot4s.generated.*
 
 /** This test runs on the JS platform for Scala 3 only.
   * There is a test with the same name, but different contents, for the JVM platform.
