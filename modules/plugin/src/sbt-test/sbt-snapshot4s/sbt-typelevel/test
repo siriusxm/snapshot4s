@@ -1,8 +1,8 @@
 # Generated code should link
-> coreJVM / Test / compile
+>  Test / compile
 # Tests should fail as snapshots are out of date
--> coreJVM / Test / test
+-> Test / test
 # Update snapshots
 > snapshot4sPromote
 # Tests should succeed with updated snapshots
-> coreJVM / Test / test
+> Test / test
