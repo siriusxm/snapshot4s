@@ -45,7 +45,7 @@ object generated {
   implicit val snapshotConfig: SnapshotConfig = new SnapshotConfig(
     resourceDirectory = Path("${snapshot4sResourceDirectory.value}"),
     outputDirectory = Path("${snapshot4sDirectory.value}"),
-    sourceDirectory = Path("${(Test / sourceDirectory).value}")
+    sourceDirectory = Path("${sourceBaseDirectory((Test / sourceDirectories).value)}")
   )
 }
  """
@@ -71,10 +71,19 @@ object generated {
       )
       applyInlinePatches(log)(
         snapshot4sDirectory.value / "inline-patch",
-        (Test / sourceDirectory).value
+        sourceBaseDirectory((Test / sourceDirectories).value)
       )
     }
   )
+
+  private def sourceBaseDirectory(sourceDirectories: Seq[File]): File = {
+    def sharedParent(dirA: File, dirB: File): File = {
+      if (dirB.getAbsolutePath().startsWith(dirA.getAbsolutePath())) dirA
+      else if (dirA.getAbsolutePath().startsWith(dirB.getAbsolutePath())) dirB
+      else sharedParent(dirA.getParentFile, dirB)
+    }
+    sourceDirectories.reduce(sharedParent)
+  }
 
   private def applyResourcePatches(log: Logger)(resourcePatchDir: File, resourceDir: File) = {
     val patches = (resourcePatchDir ** (-DirectoryFilter)).get

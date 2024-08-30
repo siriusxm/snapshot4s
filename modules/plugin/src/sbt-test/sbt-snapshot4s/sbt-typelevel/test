@@ -1,0 +1,8 @@
+# Generated code should link
+>  Test / compile
+# Tests should fail as snapshots are out of date
+-> Test / test
+# Update snapshots
+> snapshot4sPromote
+# Tests should succeed with updated snapshots
+> Test / test
