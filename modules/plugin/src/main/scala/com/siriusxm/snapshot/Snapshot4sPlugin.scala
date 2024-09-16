@@ -18,6 +18,7 @@ package snapshot4s
 
 import sbt.*
 import sbt.Keys.*
+import sbt.complete.DefaultParsers.*
 import sbt.util.Logger
 
 object Snapshot4sPlugin extends AutoPlugin {
@@ -29,7 +30,7 @@ object Snapshot4sPlugin extends AutoPlugin {
       settingKey[File]("The directory in which snapshot4s results are stored prior to promotion.")
     val snapshot4sSourceGenerator =
       taskKey[Seq[File]]("Generate source files for snapshot4s testing.")
-    val snapshot4sPromote = taskKey[Unit]("Update failing snapshot4s snapshot files.")
+    val snapshot4sPromote = inputKey[Unit]("Update failing snapshot4s snapshot files.")
   }
 
   import autoImport.*
@@ -65,16 +66,28 @@ object generated {
     },
     snapshot4sPromote := {
       val log = streams.value.log
+      val arguments =
+        spaceDelimited("<tests filter>")
+          .examples("*MySuite*", "*MySuite.scala")
+          .parsed
+
+      val filter = makeFilter(arguments)
       applyResourcePatches(log)(
         snapshot4sDirectory.value / "resource-patch",
-        snapshot4sResourceDirectory.value
+        snapshot4sResourceDirectory.value,
+        filter
       )
       applyInlinePatches(log)(
         snapshot4sDirectory.value / "inline-patch",
-        sourceBaseDirectory((Test / sourceDirectories).value)
+        sourceBaseDirectory((Test / sourceDirectories).value),
+        filter
       )
     }
   )
+
+  private def makeFilter(arguments: Seq[String]): NameFilter =
+    if (arguments.isEmpty) AllPassFilter
+    else arguments.map(GlobFilter(_)).reduce(_ | _)
 
   private def sourceBaseDirectory(sourceDirectories: Seq[File]): File = {
     def sharedParent(dirA: File, dirB: File): File = {
@@ -85,9 +98,12 @@ object generated {
     sourceDirectories.reduce(sharedParent)
   }
 
-  private def applyResourcePatches(log: Logger)(resourcePatchDir: File, resourceDir: File) = {
-    val patches = (resourcePatchDir ** (-DirectoryFilter)).get
-    patches.foreach { patchFile =>
+  private def applyResourcePatches(
+      log: Logger
+  )(resourcePatchDir: File, resourceDir: File, filter: NameFilter) = {
+    val patches         = (resourcePatchDir ** (-DirectoryFilter)).get
+    val filteredPatches = patches.filter(file => filter.accept(file.getParent))
+    filteredPatches.foreach { patchFile =>
       val patchContents      = IO.read(patchFile)
       val relativeSourceFile = IO.relativize(resourcePatchDir, patchFile).get
       val sourceFile         = resourceDir / relativeSourceFile
@@ -97,10 +113,12 @@ object generated {
     }
   }
 
-  private def applyInlinePatches(log: Logger)(inlinePatchDir: File, sourceDir: File) = {
-    val allChangeFiles = (inlinePatchDir ** (-DirectoryFilter)).get
-
-    allChangeFiles.groupBy(_.getParent).foreach { case (parentDir, changeFiles) =>
+  private def applyInlinePatches(
+      log: Logger
+  )(inlinePatchDir: File, sourceDir: File, filter: NameFilter) = {
+    val patchDirectories = (inlinePatchDir ** (-DirectoryFilter)).get
+    val dirsByParent     = patchDirectories.groupBy(_.getParent).filterKeys(filter.accept)
+    dirsByParent.foreach { case (parentDir, changeFiles) =>
       val relativeSourceFile = IO.relativize(inlinePatchDir, new File(parentDir)).get
       val sourceFile         = sourceDir / relativeSourceFile
       val sourceContents     = IO.read(sourceFile)
