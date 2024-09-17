@@ -75,24 +75,13 @@ object InlineSnapshot {
     val sourceFileHash    = Hashing.calculateHash(sourceFileContent)
     val hashHeader        = Hashing.produceHashHeader(sourceFileHash)
     val changeFile =
-      config.outputDirectory / RelPath("inline-patch") / relativeSourceFilePath(
+      config.outputDirectory / RelPath("inline-patch") / Locations.relativeSourceFilePath(
         sourceFile,
         config
       ) / RelPath(s"$startPosition-$endPosition")
     val actualFileContent = addNowarnAnnotations(reprForA.toSourceString(found))
     val actualStr         = s"${hashHeader}\n${actualFileContent}"
     changeFile.write(actualStr)
-  }
-
-  private[snapshot4s] def relativeSourceFilePath(
-      sourceFile: String,
-      config: SnapshotConfig
-  ): RelPath = {
-    val baseDirectory  = config.sourceDirectory
-    val sourceFilePath = Path(sourceFile)
-    sourceFilePath.relativeTo(baseDirectory).getOrElse {
-      throw new SnapshotConfigUnsupportedError(config)
-    }
   }
 
   // See the Scala 2.13 compiler for the source of the warning we're ignoring:

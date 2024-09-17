@@ -41,7 +41,7 @@ object FileSnapshotSpec extends SimpleIOSuite {
   }
 
   private def assert(found: String, path: PathChunk)(config: SnapshotConfig) = {
-    FileSnapshot(found, path.toString, config, comparison, resultLike)
+    FileSnapshot(found, path.toString, "FileSnapshotSpec.scala", config, comparison, resultLike)
   }
 
   private def writeSnapshot(snapshot: String, path: PathChunk)(config: SnapshotConfig) = {

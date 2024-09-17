@@ -104,13 +104,20 @@ object generated {
     val patches         = (resourcePatchDir ** (-DirectoryFilter)).get
     val filteredPatches = patches.filter(file => filter.accept(file.getParent))
     filteredPatches.foreach { patchFile =>
-      val patchContents      = IO.read(patchFile)
-      val relativeSourceFile = IO.relativize(resourcePatchDir, patchFile).get
-      val sourceFile         = resourceDir / relativeSourceFile
+      val patchContents = IO.read(patchFile)
+      val sourceFile    = locateResourceFile(resourcePatchDir, patchFile, resourceDir)
       IO.delete(patchFile)
       IO.write(sourceFile, patchContents)
       log.info(s"Patch applied to $sourceFile")
     }
+  }
+
+  private def locateResourceFile(resourcePatchDir: File, patchFile: File, resourceDir: File) = {
+    val relativePath =
+      IO.relativize(resourcePatchDir, patchFile).get
+    // relative path contains file name like "MyTest.scala" as it's first segment, we need to remove that
+    val withoutSourceTestFileName = relativePath.split("/").tail.mkString("/")
+    resourceDir / withoutSourceTestFileName
   }
 
   private def applyInlinePatches(

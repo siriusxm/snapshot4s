@@ -16,8 +16,20 @@
 
 package snapshot4s
 
-/** Encompasses all snapshot assertions.
-  *
-  * @tparam R Assertion result type specific to the test framework. For example, weaver's result type is `IO[Expectations]`.
-  */
-trait SnapshotAssertions[R] extends AssertInlineSnapshotMacro[R] with AssertFileSnapshotMacro[R]
+private[snapshot4s] object Locations {
+
+  private[snapshot4s] def getFileName(filePath: String): String =
+    filePath.split("/").last
+
+  private[snapshot4s] def relativeSourceFilePath(
+      sourceFile: String,
+      config: SnapshotConfig
+  ): RelPath = {
+    val baseDirectory  = config.sourceDirectory
+    val sourceFilePath = Path(sourceFile)
+    sourceFilePath.relativeTo(baseDirectory).getOrElse {
+      throw new SnapshotConfigUnsupportedError(config)
+    }
+  }
+
+}
