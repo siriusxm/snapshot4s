@@ -7,14 +7,17 @@
 -> ++ 2.13 test
 -> ++ 3 test
 # Not update anything with invalid filter
-# > snapshot4sPromote *IDontExist*
-# # Tests should fail as snapshots are out of date
-# -> ++ 2.12 test
-# -> ++ 2.13 test
-# -> ++ 3 test
+> snapshot4sPromote *IDontExist*
+# Tests should fail as snapshots are out of date
+-> ++ 2.12 test
+-> ++ 2.13 test
+-> ++ 3 test
 # # Update snapshots with correct filter
 > snapshot4sPromote *FilterTest*
 # # Tests should succeed with updated snapshots
-> ++ 2.12 test
-> ++ 2.13 test
-> ++ 3 test
+> ++ 2.12 testOnly *FilterTest*
+> ++ 2.13 testOnly *FilterTest*
+> ++ 3 testOnly *FilterTest*
+-> ++ 2.12 testOnly *OtherTest*
+-> ++ 2.13 testOnly *OtherTest*
+-> ++ 3 testOnly *OtherTest*
