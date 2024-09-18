@@ -18,3 +18,7 @@ Unlike `circe-golden`, snapshot4s is aimed at broader example-based testing. It 
 Here are a few tools for other languages:
  - The [Jest Javascript testing framework](https://jestjs.io/docs/snapshot-testing) supports snapshot testing.
  - [Insta.rs](https://insta.rs/) is a snapshot testing tool for Rust.
+
+## Can I choose to promote snapshots only in selected file?
+
+Yes! Similarly to running only specific test with `testOnly *MySuite*` sbt command, you can use `snapshot4sPromote *MySuite*` to only update the snapshots present in and referenced by `MySuite.scala`.
