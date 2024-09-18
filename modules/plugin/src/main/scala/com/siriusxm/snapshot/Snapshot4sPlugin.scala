@@ -115,8 +115,8 @@ object generated {
   private def locateResourceFile(resourcePatchDir: File, patchFile: File, resourceDir: File) = {
     val relativePath =
       IO.relativize(resourcePatchDir, patchFile).get
-    // relative path contains file name like "MyTest.scala" as it's first segment, we need to remove that
-    val withoutSourceTestFileName = relativePath.split("/").tail.mkString("/")
+    // relative path starts with subpath like "src/test/scala/MyTest.scala" we need to remove that
+    val withoutSourceTestFileName = relativePath.split("\\.scala/").tail.mkString("/")
     resourceDir / withoutSourceTestFileName
   }
 

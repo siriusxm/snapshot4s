@@ -18,9 +18,6 @@ package snapshot4s
 
 private[snapshot4s] object Locations {
 
-  private[snapshot4s] def getFileName(filePath: String): String =
-    filePath.split("/").last
-
   private[snapshot4s] def relativeSourceFilePath(
       sourceFile: String,
       config: SnapshotConfig

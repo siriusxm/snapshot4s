@@ -56,10 +56,4 @@ We have detected the following configuration:
 
   }
 
-  pureTest("calculates file name from path") {
-    val fileName = "MySuites.cala"
-    val path     = s"/path/to/$fileName"
-    expect.eql(Locations.getFileName(path), fileName)
-  }
-
 }

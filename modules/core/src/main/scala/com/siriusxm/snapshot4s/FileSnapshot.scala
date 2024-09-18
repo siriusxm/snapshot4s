@@ -26,13 +26,11 @@ private[snapshot4s] object FileSnapshot {
       eq: SnapshotEq[String],
       resultLike: ResultLike[String, E]
   ): E = resultLike { () =>
-    val sourceFileName       = Locations.getFileName(sourceFile)
+    val relativePath         = Locations.relativeSourceFilePath(sourceFile, config)
     val absoluteSnapshotPath = config.resourceDirectory / RelPath(snapshotPath)
     def writePatchFile() = {
       val patchPath =
-        config.outputDirectory / RelPath("resource-patch") / RelPath(sourceFileName) / RelPath(
-          snapshotPath
-        )
+        config.outputDirectory / RelPath("resource-patch") / relativePath / RelPath(snapshotPath)
       patchPath.write(found)
     }
     if (absoluteSnapshotPath.exists()) {
