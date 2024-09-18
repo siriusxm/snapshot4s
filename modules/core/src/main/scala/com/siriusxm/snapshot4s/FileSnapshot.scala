@@ -21,13 +21,16 @@ private[snapshot4s] object FileSnapshot {
   def apply[E](
       found: String,
       snapshotPath: String,
+      sourceFile: String,
       config: SnapshotConfig,
       eq: SnapshotEq[String],
       resultLike: ResultLike[String, E]
   ): E = resultLike { () =>
+    val relativePath         = Locations.relativeSourceFilePath(sourceFile, config)
     val absoluteSnapshotPath = config.resourceDirectory / RelPath(snapshotPath)
     def writePatchFile() = {
-      val patchPath = config.outputDirectory / RelPath("resource-patch") / RelPath(snapshotPath)
+      val patchPath =
+        config.outputDirectory / RelPath("resource-patch") / relativePath / RelPath(snapshotPath)
       patchPath.write(found)
     }
     if (absoluteSnapshotPath.exists()) {
@@ -43,4 +46,5 @@ private[snapshot4s] object FileSnapshot {
       Result.NonExistent(found)
     }
   }
+
 }

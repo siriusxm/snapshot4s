@@ -41,7 +41,14 @@ object FileSnapshotSpec extends SimpleIOSuite {
   }
 
   private def assert(found: String, path: PathChunk)(config: SnapshotConfig) = {
-    FileSnapshot(found, path.toString, config, comparison, resultLike)
+    FileSnapshot(
+      found,
+      path.toString,
+      s"${config.sourceDirectory.value}/src/test/scala/FileSnapshotSpec.scala",
+      config,
+      comparison,
+      resultLike
+    )
   }
 
   private def writeSnapshot(snapshot: String, path: PathChunk)(config: SnapshotConfig) = {
@@ -94,7 +101,9 @@ object FileSnapshotSpec extends SimpleIOSuite {
       patches <- getPatches(config)
     } yield expect.same(
       patches,
-      List(config.outputDirectory.osPath / "resource-patch" / "snapshot")
+      List(
+        config.outputDirectory.osPath / "resource-patch" / "src" / "test" / "scala" / "FileSnapshotSpec.scala" / "snapshot"
+      )
     )
   }
 
@@ -105,7 +114,9 @@ object FileSnapshotSpec extends SimpleIOSuite {
       patches <- getPatches(config)
     } yield expect.same(
       patches,
-      List(config.outputDirectory.osPath / "resource-patch" / "nested" / "snapshot")
+      List(
+        config.outputDirectory.osPath / "resource-patch" / "src" / "test" / "scala" / "FileSnapshotSpec.scala" / "nested" / "snapshot"
+      )
     )
   }
 }

@@ -19,7 +19,7 @@ package snapshot4s
 import cats.effect.IO
 import weaver.*
 
-object InlineSnapshotSpec extends SimpleIOSuite {
+object LocationsSpec extends SimpleIOSuite {
 
   pureTest("calculates relative paths correctly") {
     val config = new SnapshotConfig(
@@ -28,7 +28,7 @@ object InlineSnapshotSpec extends SimpleIOSuite {
       sourceDirectory = Path("/path/to/sources")
     )
     val relativePath =
-      InlineSnapshot.relativeSourceFilePath("/path/to/sources/TestFile.scala", config)
+      Locations.relativeSourceFilePath("/path/to/sources/TestFile.scala", config)
     expect.eql(relativePath.value, "TestFile.scala")
   }
 
@@ -39,7 +39,7 @@ object InlineSnapshotSpec extends SimpleIOSuite {
       sourceDirectory = Path("/wrong/path/to/sources")
     )
     val result =
-      IO(InlineSnapshot.relativeSourceFilePath("/path/to/sources/TestFile.scala", config))
+      IO(Locations.relativeSourceFilePath("/path/to/sources/TestFile.scala", config))
     val message =
       """Your project setup is not supported by snapshot4s. We encourage you to raise an issue at https://github.com/siriusxm/snapshot4s/issues/new?template=bug.md
 
@@ -55,4 +55,5 @@ We have detected the following configuration:
     }
 
   }
+
 }
