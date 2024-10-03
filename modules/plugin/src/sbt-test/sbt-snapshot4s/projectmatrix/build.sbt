@@ -1,7 +1,7 @@
 import snapshot4s.BuildInfo.snapshot4sVersion
 
 lazy val scala3Version   = "3.4.2"
-lazy val scala213Version = "2.13.14"
+lazy val scala213Version = "2.13.15"
 lazy val scala212Version = "2.12.20"
 lazy val scalaVersions   = Seq(scala3Version, scala213Version, scala212Version)
 
