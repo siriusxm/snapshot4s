@@ -10,6 +10,6 @@ addSbtPlugin("org.typelevel"     % "sbt-typelevel-scalafix"    % "0.7.2-12-17ac9
 addSbtPlugin("org.typelevel"     % "sbt-typelevel-settings"    % "0.7.2-12-17ac909-SNAPSHOT")
 addSbtPlugin("org.typelevel"     % "sbt-typelevel-ci-release"  % "0.7.2-12-17ac909-SNAPSHOT")
 addSbtPlugin("com.eed3si9n"      % "sbt-buildinfo"             % "0.13.1")
-addSbtPlugin("com.eed3si9n"      % "sbt-projectmatrix"         % "0.10.0")
+addSbtPlugin("com.eed3si9n"      % "sbt-projectmatrix"         % "0.10.1")
 addSbtPlugin("org.scala-js"      % "sbt-scalajs"               % "1.17.0")
 addSbtPlugin("de.heikoseeberger" % "sbt-header"                % "5.10.0")
