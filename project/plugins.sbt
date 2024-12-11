@@ -3,7 +3,7 @@ addDependencyTreePlugin
 resolvers += "Sonatype OSS Snapshots" at "https://s01.oss.sonatype.org/content/repositories/snapshots/"
 
 addSbtPlugin("org.scalameta"     % "sbt-scalafmt"              % "2.5.2")
-addSbtPlugin("org.scalameta"     % "sbt-mdoc"                  % "2.6.1")
+addSbtPlugin("org.scalameta"     % "sbt-mdoc"                  % "2.6.2")
 addSbtPlugin("com.timushev.sbt"  % "sbt-updates"               % "0.6.4")
 addSbtPlugin("com.github.cb372"  % "sbt-explicit-dependencies" % "0.3.1")
 addSbtPlugin("org.typelevel"     % "sbt-typelevel-scalafix"    % "0.7.2-12-17ac909-SNAPSHOT")
