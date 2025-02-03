@@ -32,7 +32,7 @@ private object MunitResultLike {
   private def resultToAssertion[A](result: Result[A], loc: Location): Unit = {
     result match {
       case _: Result.Success[?]     => ()
-      case _: Result.NonExistent[?] => throw Assertions.fail("Snapshot does not exist.")(loc)
+      case _: Result.NonExistent[?] => throw Assertions.fail(ErrorMessages.nonExistent)(loc)
       case Result.Failure(found, snapshot) =>
         throw Assertions.fail(diffReport(found.toString, snapshot.toString))(loc)
     }
@@ -44,6 +44,6 @@ private object MunitResultLike {
       obtained = found,
       expected = expected
     )
-    diff.createReport("Snapshot not equal", printObtainedAsStripMargin = false)
+    diff.createReport(ErrorMessages.failure, printObtainedAsStripMargin = false)
   }
 }
