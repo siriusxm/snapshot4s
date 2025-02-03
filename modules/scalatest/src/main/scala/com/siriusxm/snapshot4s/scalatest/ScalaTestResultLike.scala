@@ -44,7 +44,7 @@ private object ScalaTestResultLike {
       case _: Result.Success[?] => Succeeded
       case _: Result.NonExistent[?] =>
         throw new TestFailedException(
-          _ => Some("Snapshot does not exist."),
+          _ => Some(ErrorMessages.nonExistent),
           cause = None,
           posOrStackDepthFun = Left(pos),
           payload = None,
@@ -53,7 +53,7 @@ private object ScalaTestResultLike {
       case Result.Failure(found, snapshot) =>
         val diff = prettifier(found, snapshot)
         throw new TestFailedException(
-          _ => Some(s"Snapshots not equal. Expected: ${diff.right}, but got ${diff.left}"),
+          _ => Some(s"${ErrorMessages.failure} Expected: ${diff.right}, but got ${diff.left}"),
           cause = None,
           posOrStackDepthFun = Left(pos),
           payload = None,

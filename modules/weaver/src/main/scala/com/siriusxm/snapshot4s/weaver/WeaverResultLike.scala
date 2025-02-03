@@ -20,7 +20,7 @@ import _root_.weaver.{AssertionException, Expectations, SourceLocation}
 import cats.data.{NonEmptyList, Validated}
 import cats.effect.IO
 
-import snapshot4s.{Result, ResultLike}
+import snapshot4s.{ErrorMessages, Result, ResultLike}
 
 object WeaverResultLike {
 
@@ -40,7 +40,7 @@ object WeaverResultLike {
       case _: Result.NonExistent[?] =>
         Expectations(
           Validated.invalidNel[AssertionException, Unit](
-            AssertionException("Snapshot does not exist.", NonEmptyList.of(loc))
+            AssertionException(ErrorMessages.nonExistent, NonEmptyList.of(loc))
           )
         )
       case Result.Failure(found, snapshot) =>

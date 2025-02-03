@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-package snapshot4s.weaver
+package snapshot4s
 
-import snapshot4s.ErrorMessages
-
-private object Diff {
-
-  import munit.diff.Diff
-
-  def apply(found: String, expected: String): String = {
-    val diff = new Diff(
-      obtained = found,
-      expected = expected
-    )
-    diff.createReport(ErrorMessages.failure, printObtainedAsStripMargin = false)
-  }
+private object ErrorMessages {
+  val nonExistent: String = "Snapshot does not exist. Run 'sbt snapshot4sPromote' to create it."
+  val failure: String     = "Snapshot not equal. Run 'sbt snapshot4sPromote' to update it."
 }
