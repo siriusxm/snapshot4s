@@ -25,7 +25,7 @@ import snapshot4s.*
 
 object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
 
-  import SnapshotExpectations.{assertInlineSnapshot as assertSnapshot}
+  import SnapshotExpectations.assertInlineSnapshot as assertSnapshot
 
   private def setupConfig: IO[SnapshotConfig] = {
     val tempDir = IO(new Path(os.temp.dir()))
