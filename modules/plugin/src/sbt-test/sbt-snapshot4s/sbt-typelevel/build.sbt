@@ -44,4 +44,3 @@ lazy val framework = crossProject(JVMPlatform, JSPlatform)
     libraryDependencies += "com.siriusxm" %%% "snapshot4s-weaver" % snapshot4sVersion % Test
   )
   .enablePlugins(Snapshot4sPlugin)
-
