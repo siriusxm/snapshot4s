@@ -26,7 +26,7 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
 
   import snapshot4s.*
 
-  import SnapshotAssertions.{assertInlineSnapshot as assertSnapshot}
+  import SnapshotAssertions.assertInlineSnapshot as assertSnapshot
 
   private def setupConfig: IO[SnapshotConfig] = {
     val tempDir = IO(new Path(os.temp.dir()))
