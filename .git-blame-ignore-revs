@@ -6,3 +6,6 @@
 
 # Scala Steward: Reformat with scalafmt 3.8.6
 cd18a6a31df9f46ceb07a2a1756bb63b0a74f352
+
+# Scala Steward: Reformat with scalafmt 3.9.3
+9e44c3a59a2c38add78d2e8cf51c0b49264b397e
