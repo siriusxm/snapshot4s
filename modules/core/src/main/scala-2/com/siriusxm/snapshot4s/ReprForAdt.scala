@@ -23,6 +23,7 @@ trait ReprForAdt {
   // Mirror is only used to guarantee we are working with sum/product
   // in such case it's safe to rely on pprint instead of having a separate Repr implementation
   implicit def productRepr[A <: Product]: Repr[A] = v =>
+    // width and height are overridden to handle very large snapshots
     pprint.apply(v, width = 200, height = 99999999).plainText
   implicit def sumRepr[A]: Repr[A] = macro ReprForSum.impl[A]
 
