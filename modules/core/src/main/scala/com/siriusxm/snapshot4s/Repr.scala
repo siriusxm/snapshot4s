@@ -60,6 +60,8 @@ object Repr extends ReprForAdt {
   ): Repr[Either[L, R]] = fromPprint
 
   // Creates Repr instance based on pprint
-  def fromPprint[A]: Repr[A] = (a: A) => pprint.apply(a).plainText
+  def fromPprint[A]: Repr[A] = (a: A) =>
+    // width and height are overridden to handle very large snapshots
+    pprint.apply(a, width = 200, height = 99999999).plainText
 
 }
