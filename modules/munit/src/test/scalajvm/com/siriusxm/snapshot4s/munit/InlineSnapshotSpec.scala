@@ -48,7 +48,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
       config <- setupConfig
       result <- suspend(
         assertSnapshot("new-contents", "old-contents")(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
@@ -62,7 +63,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
       config <- setupConfig
       result <- suspend(
         assertSnapshot("contents", "contents")(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
@@ -86,7 +88,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
       config <- setupConfig
       _ <- suspend(
         assertSnapshot("new-contents", "old-contents")(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
@@ -107,7 +110,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
       config <- setupConfig
       _ <- suspend(
         assertSnapshot("new-contents", ???)(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
@@ -130,7 +134,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
       config <- setupConfig
       _ <- suspend(
         assertSnapshot("new-contents", "old-contents")(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
@@ -138,7 +143,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
       )
       _ <- suspend(
         assertSnapshot("other-contents", "old-contents")(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
