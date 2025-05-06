@@ -45,7 +45,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
     for {
       config <- setupConfig
       result <- assertSnapshot("new-contents", "old-contents")(
-        using config,
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
@@ -57,7 +58,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
     for {
       config <- setupConfig
       result <- assertSnapshot("contents", "contents")(
-        using config,
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
@@ -77,7 +79,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
     for {
       config <- setupConfig
       _ <- assertSnapshot("new-contents", "old-contents")(
-        using config,
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
@@ -96,7 +99,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
     for {
       config <- setupConfig
       _ <- assertSnapshot("new-contents", ???)(
-        using config,
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
@@ -117,13 +121,15 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
     for {
       config <- setupConfig
       _ <- assertSnapshot("new-contents", "old-contents")(
-        using config,
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
       )
       _ <- assertSnapshot("other-contents", "old-contents")(
-        using config,
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
