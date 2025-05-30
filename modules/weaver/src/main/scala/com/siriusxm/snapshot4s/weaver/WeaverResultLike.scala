@@ -36,7 +36,7 @@ object WeaverResultLike {
       loc: SourceLocation
   ): Expectations = {
     result match {
-      case _: Result.Success[?] => Expectations.Helpers.success
+      case _: Result.Success[?]     => Expectations.Helpers.success
       case _: Result.NonExistent[?] =>
         Expectations(
           Validated.invalidNel[AssertionException, Unit](

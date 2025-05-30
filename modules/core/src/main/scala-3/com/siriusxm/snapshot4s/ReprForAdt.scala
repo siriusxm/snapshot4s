@@ -24,7 +24,7 @@ trait ReprForAdt:
   inline given summoningFrom[A]: Repr[A] =
     summonFrom {
       case given Mirror.Of[A] => derived[A]
-      case _ =>
+      case _                  =>
         error("""Cannot derive Repr instance. The type parameter is neither a Sum nor Product type.
 
 See the guide for a list of supported types:
