@@ -28,7 +28,7 @@ private[snapshot4s] object FileSnapshot {
   ): E = resultLike { () =>
     val relativePath         = Locations.relativeSourceFilePath(sourceFile, config)
     val absoluteSnapshotPath = config.resourceDirectory / RelPath(snapshotPath)
-    def writePatchFile() = {
+    def writePatchFile()     = {
       val patchPath =
         config.outputDirectory / RelPath("resource-patch") / relativePath / RelPath(snapshotPath)
       patchPath.write(found)
