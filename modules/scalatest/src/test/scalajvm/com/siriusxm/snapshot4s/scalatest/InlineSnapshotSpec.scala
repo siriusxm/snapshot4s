@@ -50,7 +50,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
       config <- setupConfig
       result <- suspend(
         assertSnapshot("new-contents", "old-contents")(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
@@ -64,7 +65,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
       config <- setupConfig
       result <- suspend(
         assertSnapshot("contents", "contents")(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
@@ -76,7 +78,7 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
   test("not write a patch file on success") {
     for {
       config <- setupConfig
-      _ <- suspend(
+      _      <- suspend(
         assertSnapshot("contents", "contents")(using config, implicitly, implicitly, implicitly)
       )
       patches <- getPatches(config)
@@ -86,9 +88,10 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
   test("write a patch file on failure") {
     for {
       config <- setupConfig
-      _ <- suspend(
+      _      <- suspend(
         assertSnapshot("new-contents", "old-contents")(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
@@ -107,9 +110,10 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
   test("generate a patch on ???") {
     for {
       config <- setupConfig
-      _ <- suspend(
+      _      <- suspend(
         assertSnapshot("new-contents", ???)(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
@@ -130,9 +134,10 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
   test("write a patch file for each assertion") {
     for {
       config <- setupConfig
-      _ <- suspend(
+      _      <- suspend(
         assertSnapshot("new-contents", "old-contents")(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly
@@ -140,7 +145,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
       )
       _ <- suspend(
         assertSnapshot("other-contents", "old-contents")(
-          using config,
+          using
+          config,
           implicitly,
           implicitly,
           implicitly

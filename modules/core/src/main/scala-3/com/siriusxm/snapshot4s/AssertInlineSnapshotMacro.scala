@@ -62,7 +62,7 @@ private[snapshot4s] object AssertInlineSnapshotMacro:
     val path          = Expr(Position.ofMacroExpansion.sourceFile.path)
     val snapshotStart = Expr(snapshot.asTerm.pos.start)
     val snapshotEnd   = Expr(snapshot.asTerm.pos.end)
-    val result = snapshot match
+    val result        = snapshot match
       case '{ ??? } =>
         '{
           InlineSnapshot.generate(
