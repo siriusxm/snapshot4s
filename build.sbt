@@ -79,7 +79,7 @@ lazy val allModules: Seq[ProjectReference] = Seq(
 lazy val pluginSettings = Seq(
   scalaVersion                     := sbtPluginScalaVersion,
   sbtPluginPublishLegacyMavenStyle := false,
-  scriptedLaunchOpts := {
+  scriptedLaunchOpts               := {
     scriptedLaunchOpts.value ++
       Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
   },
@@ -176,7 +176,7 @@ lazy val plugin = project
     pluginSettings,
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
     mimaPreviousArtifacts := Set.empty,
-    scriptedDependencies := {
+    scriptedDependencies  := {
       scriptedDependencies.value
       publishLocal.all(scriptedScopeFilter).value
     }
@@ -196,7 +196,7 @@ lazy val docs = project
     tlMimaPreviousVersions := Set.empty,
     mdocIn                 := new File("docs/markdown/"),
     mdocOut                := new File("website/docs"),
-    mdocVariables := Map(
+    mdocVariables          := Map(
       "LATEST_STABLE_VERSION" -> latestStableVersion.getOrElse(version.value)
     ),
     fork := false, // Without this set to false mdoc would mess up it's paths and stop working
