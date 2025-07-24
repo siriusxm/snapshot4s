@@ -45,7 +45,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
     for {
       config <- setupConfig
       result <- assertSnapshot("new-contents", "old-contents")(
-        using config,
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
@@ -57,7 +58,8 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
     for {
       config <- setupConfig
       result <- assertSnapshot("contents", "contents")(
-        using config,
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
@@ -76,8 +78,9 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
   test("write a patch file on failure") {
     for {
       config <- setupConfig
-      _ <- assertSnapshot("new-contents", "old-contents")(
-        using config,
+      _      <- assertSnapshot("new-contents", "old-contents")(
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
@@ -95,8 +98,9 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
   test("generate a patch on ???") {
     for {
       config <- setupConfig
-      _ <- assertSnapshot("new-contents", ???)(
-        using config,
+      _      <- assertSnapshot("new-contents", ???)(
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
@@ -116,14 +120,16 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
   test("write a patch file for each assertion") {
     for {
       config <- setupConfig
-      _ <- assertSnapshot("new-contents", "old-contents")(
-        using config,
+      _      <- assertSnapshot("new-contents", "old-contents")(
+        using
+        config,
         implicitly,
         implicitly,
         implicitly
       )
       _ <- assertSnapshot("other-contents", "old-contents")(
-        using config,
+        using
+        config,
         implicitly,
         implicitly,
         implicitly

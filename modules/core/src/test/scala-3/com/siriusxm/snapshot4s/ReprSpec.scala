@@ -115,7 +115,7 @@ object ReprSpec extends FunSuite:
   private inline def failsCompilationWith(name: String)(inline code: String)(error: String) =
     test(s"[doesn't compile] $name") {
       val compilationResult = typeCheckErrors(code)
-      val errorMessage =
+      val errorMessage      =
         if compilationResult.isEmpty then "Compilation didn't fail, although it was expected to"
         else s"Compilation failed but the error didn't match. Cause: $compilationResult"
       expect(compilationResult.exists(_.message.contains(error)), errorMessage)
