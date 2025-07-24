@@ -74,7 +74,7 @@ object InlineSnapshot {
     val sourceFileContent = sourceFilePath.read()
     val sourceFileHash    = Hashing.calculateHash(sourceFileContent)
     val hashHeader        = Hashing.produceHashHeader(sourceFileHash)
-    val changeFile =
+    val changeFile        =
       config.outputDirectory / RelPath("inline-patch") / Locations.relativeSourceFilePath(
         sourceFile,
         config
