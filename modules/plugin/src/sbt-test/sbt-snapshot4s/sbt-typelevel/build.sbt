@@ -10,7 +10,7 @@ lazy val core = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Pure)
   .in(file("core"))
   .settings(
-    name := "core",
+    name                        := "core",
     snapshot4sResourceDirectory := CrossType.Pure
       .sharedResourcesDir(baseDirectory.value, "test")
       .get / "snapshot",
@@ -24,7 +24,7 @@ lazy val utils = crossProject(JVMPlatform, JSPlatform)
   .crossType(CrossType.Full)
   .in(file("utils"))
   .settings(
-    name := "utils",
+    name                        := "utils",
     snapshot4sResourceDirectory := CrossType.Full
       .sharedResourcesDir(baseDirectory.value, "test")
       .get / "snapshot",
