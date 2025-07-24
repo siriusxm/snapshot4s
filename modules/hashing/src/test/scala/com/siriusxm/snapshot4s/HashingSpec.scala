@@ -42,7 +42,7 @@ object HashingSpec extends SimpleIOSuite with Checkers {
   test("produces hash header") {
     val hash   = "1234"
     val header = Hashing.produceHashHeader(hash)
-    assert(header.startsWith("# Hash: 1234")).pure
+    expect(header.startsWith("# Hash: 1234")).pure
   }
 
   test("extracts hash when possible") {
