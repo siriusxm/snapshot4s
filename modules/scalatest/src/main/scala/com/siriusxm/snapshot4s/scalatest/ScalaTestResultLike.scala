@@ -41,7 +41,7 @@ private object ScalaTestResultLike {
       prettifier: Prettifier
   ): Assertion = {
     result match {
-      case _: Result.Success[?] => Succeeded
+      case _: Result.Success[?]     => Succeeded
       case _: Result.NonExistent[?] =>
         throw new TestFailedException(
           _ => Some(ErrorMessages.nonExistent),
