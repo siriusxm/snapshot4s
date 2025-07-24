@@ -90,8 +90,8 @@ lazy val hashing = (projectMatrix in file("modules/hashing"))
   .settings(
     name := "snapshot4s-hashing",
     libraryDependencies ++= Seq(
-      "com.disneystreaming" %%% "weaver-cats"       % Versions.weaver % Test,
-      "com.disneystreaming" %%% "weaver-scalacheck" % Versions.weaver % Test
+      "org.typelevel" %%% "weaver-cats"       % Versions.weaver % Test,
+      "org.typelevel" %%% "weaver-scalacheck" % Versions.weaver % Test
     ),
     mimaPreviousArtifacts := Set.empty
   )
@@ -102,10 +102,10 @@ lazy val core = (projectMatrix in file("modules/core"))
   .settings(
     name := "snapshot4s-core",
     libraryDependencies ++= Seq(
-      "com.lihaoyi"         %%% "pprint"                   % Versions.pprint,
-      "com.disneystreaming" %%% "weaver-cats"              % Versions.weaver % Test,
-      "org.scalameta"       %%% "munit"                    % Versions.munit  % Test,
-      "org.typelevel"        %% "scalac-compat-annotation" % Versions.scalacCompatAnnotation
+      "com.lihaoyi"   %%% "pprint"                   % Versions.pprint,
+      "org.typelevel" %%% "weaver-cats"              % Versions.weaver % Test,
+      "org.scalameta" %%% "munit"                    % Versions.munit  % Test,
+      "org.typelevel"  %% "scalac-compat-annotation" % Versions.scalacCompatAnnotation
     ) ++ scalaReflect(scalaVersion.value),
     mimaPreviousArtifacts := Set.empty
   )
@@ -124,8 +124,8 @@ lazy val munit = (projectMatrix in file("modules/munit"))
   .settings(
     name := "snapshot4s-munit",
     libraryDependencies ++= Seq(
-      "org.scalameta"       %%% "munit"       % Versions.munit,
-      "com.disneystreaming" %%% "weaver-cats" % Versions.weaver % Test
+      "org.scalameta" %%% "munit"       % Versions.munit,
+      "org.typelevel" %%% "weaver-cats" % Versions.weaver % Test
     ),
     mimaPreviousArtifacts := Set.empty
   )
@@ -137,8 +137,8 @@ lazy val weaver = (projectMatrix in file("modules/weaver"))
   .settings(
     name := "snapshot4s-weaver",
     libraryDependencies ++= Seq(
-      "com.disneystreaming" %%% "weaver-cats" % Versions.weaver,
-      "org.scalameta"       %%% "munit"       % Versions.munit
+      "org.typelevel" %%% "weaver-cats" % Versions.weaver,
+      "org.scalameta" %%% "munit"       % Versions.munit
     ),
     mimaPreviousArtifacts := Set.empty
   )
@@ -150,8 +150,8 @@ lazy val scalatest = (projectMatrix in file("modules/scalatest"))
   .settings(
     name := "snapshot4s-scalatest",
     libraryDependencies ++= Seq(
-      "org.scalatest"       %%% "scalatest-core" % Versions.scalatest,
-      "com.disneystreaming" %%% "weaver-cats"    % Versions.weaver % Test
+      "org.scalatest" %%% "scalatest-core" % Versions.scalatest,
+      "org.typelevel" %%% "weaver-cats"    % Versions.weaver % Test
     ),
     mimaPreviousArtifacts := Set.empty
   )
