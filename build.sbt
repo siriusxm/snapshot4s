@@ -50,7 +50,7 @@ inThisBuild(
     githubWorkflowPublishTargetBranches += RefPredicate.Equals(Ref.Branch("main")),
     ThisBuild / githubWorkflowBuild += WorkflowStep
       .Run(List("sbt scripted"), name = Some("Scripted tests")),
-    tlBaseVersion          := "0.1",
+    tlBaseVersion          := "0.2",
     tlUntaggedAreSnapshots := false,
     tlFatalWarnings        := sys.env.get("GITHUB_ACTIONS").contains("true"),
     tlCiHeaderCheck        := true,
