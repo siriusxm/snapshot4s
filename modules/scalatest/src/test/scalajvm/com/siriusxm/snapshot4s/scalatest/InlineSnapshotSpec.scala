@@ -33,7 +33,11 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotAssertions {
     (
       tempDir,
       tempDir,
-      IO(new Path(OsPath(implicitly[SourceLocation].filePath) / os.up))
+      IO(
+        new Path(
+          os.pwd / "modules" / "scalatest" / "src" / "test" / "scalajvm" / "com" / "siriusxm" / "snapshot4s" / "scalatest"
+        )
+      )
     )
       .mapN(new SnapshotConfig(_, _, _))
   }
