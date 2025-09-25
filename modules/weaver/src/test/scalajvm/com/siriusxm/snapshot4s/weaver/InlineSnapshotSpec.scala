@@ -32,7 +32,11 @@ object InlineSnapshotSpec extends SimpleIOSuite with SnapshotExpectations {
     (
       tempDir,
       tempDir,
-      IO(new Path(OsPath(implicitly[SourceLocation].filePath) / os.up))
+      IO(
+        new Path(
+          os.pwd / "modules" / "weaver" / "src" / "test" / "scalajvm" / "com" / "siriusxm" / "snapshot4s" / "weaver"
+        )
+      )
     )
       .mapN(new SnapshotConfig(_, _, _))
   }
