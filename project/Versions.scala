@@ -1,5 +1,5 @@
 object Versions {
-  val oslib                  = "0.11.5"
+  val oslib                  = "0.11.6"
   val weaver                 = "0.10.1"
   val pprint                 = "0.9.3"
   val munit                  = "1.2.0"
