@@ -16,7 +16,7 @@
 
 package snapshot4s
 
-import scala.compiletime.{erasedValue, error, summonAll, summonFrom, summonInline}
+import scala.compiletime.{error, summonAll, summonFrom}
 import scala.deriving.Mirror
 
 trait ReprForAdt:
@@ -35,5 +35,5 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types""")
     // we don't care about the actual instances
     // summon is called to make sure all member types
     // also have their Repr instances
-    lazy val _ = summonAll[Tuple.Map[m.MirroredElemTypes, Repr]]
+    summonAll[Tuple.Map[m.MirroredElemTypes, Repr]]
     Repr.fromPprint
