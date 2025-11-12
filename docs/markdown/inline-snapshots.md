@@ -31,7 +31,7 @@ assertInlineSnapshot(found, Config(environment = "dev", region = "us-east-2"))
 
 You can also use it for strings. 
 
-```scala mdoc:compile-only
+```scala mdoc:silent
 assertInlineSnapshot(found = "The answer", "The answer")
 ```
 
@@ -79,7 +79,7 @@ assertInlineSnapshot(found = Nil, List(Person("Alice"), Person("Bob")))
 
 It should not be used on variables.
 
-```scala mdoc:compile-only
+```scala mdoc:silent
 val personVariable = Person("Bob") 
 assertInlineSnapshot(found = Person("Alice"), personVariable) // Bad: personVariable will be replaced with Person("Alice")
 assertInlineSnapshot(found = Person("Alice"), Person("Bob"))  // Good: "Bob" will be replaced with "Alice".
