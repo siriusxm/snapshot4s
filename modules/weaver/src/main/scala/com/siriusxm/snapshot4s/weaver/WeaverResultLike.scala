@@ -16,7 +16,7 @@
 
 package snapshot4s.weaver
 
-import _root_.weaver.{AssertionException, Expectations, SourceLocation}
+import _root_.weaver.{ExpectationFailed, Expectations, SourceLocation}
 import cats.data.{NonEmptyList, Validated}
 import cats.effect.IO
 
@@ -39,14 +39,14 @@ object WeaverResultLike {
       case _: Result.Success[?]     => Expectations.Helpers.success
       case _: Result.NonExistent[?] =>
         Expectations(
-          Validated.invalidNel[AssertionException, Unit](
-            AssertionException(ErrorMessages.nonExistent, NonEmptyList.of(loc))
+          Validated.invalidNel[ExpectationFailed, Unit](
+            new ExpectationFailed(ErrorMessages.nonExistent, NonEmptyList.of(loc))
           )
         )
       case Result.Failure(found, snapshot) =>
         Expectations(
-          Validated.invalidNel[AssertionException, Unit](
-            AssertionException(Diff(found.toString, snapshot.toString), NonEmptyList.of(loc))
+          Validated.invalidNel[ExpectationFailed, Unit](
+            new ExpectationFailed(Diff(found.toString, snapshot.toString), NonEmptyList.of(loc))
           )
         )
     }
