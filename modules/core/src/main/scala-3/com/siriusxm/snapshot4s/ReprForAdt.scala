@@ -76,11 +76,12 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types""")
   private inline def derivedSum[A](mirror: Mirror.SumOf[A], elemInstances: Tuple): Repr[A] = {
     // Extract to avoid duplication warning in inline context
     def createSumRepr(mirror: Mirror.SumOf[A], elemInstances: Tuple): Repr[A] =
-      new Repr[A]:
+      new Repr[A] {
         def toSourceString(a: A): String =
           val ordinal      = mirror.ordinal(a)
           val reprInstance = elemInstances.productElement(ordinal).asInstanceOf[Repr[Any]]
           reprInstance.toSourceString(a)
+      }
 
     createSumRepr(mirror, elemInstances)
   }
