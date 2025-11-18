@@ -19,6 +19,7 @@ package snapshot4s
 import scala.annotation.implicitNotFound
 
 import org.typelevel.scalaccompat.annotation.unused
+import snapshot4s.internals.MultiLineRepr
 
 /** Repr provides a code representation for given type.
   * It serves the purpose of serializing data structure
@@ -63,5 +64,7 @@ object Repr extends ReprForAdt {
   def fromPprint[A]: Repr[A] = (a: A) =>
     // width and height are overridden to handle very large snapshots
     pprint.apply(a, width = 200, height = 99999999).plainText
+
+  def default[A]: Repr[A] = MultiLineRepr.repr[A]
 
 }
