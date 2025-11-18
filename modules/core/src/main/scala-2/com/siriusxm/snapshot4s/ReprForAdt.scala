@@ -50,10 +50,8 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
     if (classSymbol.isSealed) {
       // Handle sealed trait/class (sum type)
       deriveSumRepr[A](c)
-    } else if (
-      classSymbol.isCaseClass || (classSymbol.isClass && classSymbol.primaryConstructor.isMethod)
-    ) {
-      // Handle case class or regular class with constructor (product type)
+    } else if (classSymbol.isCaseClass) {
+      // Handle case class (product type)
       deriveProductRepr[A](c)
     } else {
       c.abort(
