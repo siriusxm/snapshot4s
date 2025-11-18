@@ -20,9 +20,6 @@ import scala.reflect.macros.blackbox
 
 trait ReprForAdt {
 
-  /** Main derivation entry point. Attempts to derive Repr for sum or product types.
-    * This is the Scala 2 equivalent of the Scala 3 summoningFrom method.
-    */
   implicit def derived[A]: Repr[A] = macro ReprForAdtMacros.deriveRepr[A]
 
 }
@@ -48,10 +45,8 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
     val classSymbol = symbol.asClass
 
     if (classSymbol.isSealed) {
-      // Handle sealed trait/class (sum type)
       deriveSumRepr[A](c)
     } else if (classSymbol.isCaseClass) {
-      // Handle case class (product type)
       deriveProductRepr[A](c)
     } else {
       c.abort(
@@ -71,12 +66,10 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
     val typeName    = tpe.typeSymbol.name.decodedName.toString
     val classSymbol = tpe.typeSymbol.asClass
 
-    // Get constructor parameters
     val constructor = classSymbol.primaryConstructor.asMethod
     val paramLists  = constructor.paramLists
 
     if (paramLists.isEmpty || paramLists.head.isEmpty) {
-      // No parameters - simple case
       c.Expr[Repr[A]](q"""
         new _root_.snapshot4s.Repr[$tpe] {
           def toSourceString(a: $tpe): String = ${typeName}
@@ -85,7 +78,6 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
     } else {
       val params = paramLists.head
 
-      // Generate field access and Repr instance summoning for each parameter
       val fieldAccessors = params.zipWithIndex.map { case (param, index) =>
         val paramName = param.name.decodedName.toString
         val paramType = param.typeSignature.finalResultType
@@ -98,10 +90,8 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
         cq"""_ if index == $index => implicitly[_root_.snapshot4s.Repr[$paramType]].toSourceString(elem.asInstanceOf[$paramType])"""
       }
 
-      // Generate field name array
       val fieldNameLiterals = fieldAccessors.map { case (paramName, _, _) => q"$paramName" }
 
-      // Create the implementation
       c.Expr[Repr[A]](q"""
         new _root_.snapshot4s.Repr[$tpe] {
           def toSourceString(a: $tpe): String = {
