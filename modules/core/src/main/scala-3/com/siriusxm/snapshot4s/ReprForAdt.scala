@@ -19,7 +19,7 @@ package snapshot4s
 import scala.compiletime.{constValue, constValueTuple, error, summonAll, summonFrom}
 import scala.deriving.Mirror
 
-trait ReprForAdt:
+trait ReprForAdt {
 
   inline given summoningFrom[A]: Repr[A] =
     summonFrom {
@@ -31,20 +31,22 @@ See the guide for a list of supported types:
 https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types""")
     }
 
-  inline def derived[A](using m: Mirror.Of[A]): Repr[A] =
+  inline def derived[A](using m: Mirror.Of[A]): Repr[A] = {
     val elemInstances = summonAll[Tuple.Map[m.MirroredElemTypes, Repr]]
 
-    inline m match
+    inline m match  {
       case s: Mirror.SumOf[A]     => derivedSum(s, elemInstances)
       case p: Mirror.ProductOf[A] => derivedProduct(p, elemInstances)
+    }
+  }
 
-  private inline def derivedProduct[A](mirror: Mirror.ProductOf[A], elemInstances: Tuple): Repr[A] =
+  private inline def derivedProduct[A](mirror: Mirror.ProductOf[A], elemInstances: Tuple): Repr[A] = {
     val typeName   = constValue[mirror.MirroredLabel]
     val elemLabels = constValueTuple[mirror.MirroredElemLabels]
 
     // Extract to avoid duplication warning in inline context
     def createProductRepr(typeName: String, elemLabels: Tuple, elemInstances: Tuple): Repr[A] =
-      new Repr[A]:
+      new Repr[A] {
         def toSourceString(a: A): String =
           val product  = a.asInstanceOf[Product]
           val elements = product.productIterator.toArray
@@ -66,12 +68,12 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types""")
             else
               // Positional parameters: Person("John", 25)
               s"$typeName(${elementReprs.mkString(", ")})"
-
+      }
     createProductRepr(typeName, elemLabels, elemInstances)
 
-  end derivedProduct
+  }
 
-  private inline def derivedSum[A](mirror: Mirror.SumOf[A], elemInstances: Tuple): Repr[A] =
+  private inline def derivedSum[A](mirror: Mirror.SumOf[A], elemInstances: Tuple): Repr[A] = {
     // Extract to avoid duplication warning in inline context
     def createSumRepr(mirror: Mirror.SumOf[A], elemInstances: Tuple): Repr[A] =
       new Repr[A]:
@@ -81,4 +83,5 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types""")
           reprInstance.toSourceString(a)
 
     createSumRepr(mirror, elemInstances)
-end ReprForAdt
+  }
+}
