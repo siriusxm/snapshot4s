@@ -27,7 +27,7 @@ trait ReprTestCases { self: FunSuite =>
 
   case class Empty()
   case class SingleField(x: Int)
-  case class ManyFields(a: Int, b: String, c: Boolean, d: Double)
+  case class ManyFields(a: Int, b: String, c: Boolean, d: Long)
   case class NestedCase(inner: SingleField)
   case class WithOption(value: Option[String])
   case class WithEither(value: Either[String, Int])
@@ -54,8 +54,8 @@ trait ReprTestCases { self: FunSuite =>
   test("Repr handles case class with many fields") {
     @nowarn("msg=match may not be exhaustive")
     val repr  = getRepr[ManyFields]
-    val input = ManyFields(1, "hello", true, 3.14)
-    expect.same("ManyFields(a = 1, b = \"hello\", c = true, d = 3.14)", repr.toSourceString(input))
+    val input = ManyFields(1, "hello", true, 999L)
+    expect.same("ManyFields(a = 1, b = \"hello\", c = true, d = 999L)", repr.toSourceString(input))
   }
 
   test("Repr handles nested case classes") {
@@ -113,11 +113,11 @@ trait ReprTestCases { self: FunSuite =>
   test("Repr uses named parameters for case classes") {
     @nowarn("msg=match may not be exhaustive")
     val repr   = getRepr[ManyFields]
-    val input  = ManyFields(0, "", false, 0.0)
+    val input  = ManyFields(0, "", false, 0L)
     val output = repr.toSourceString(input)
 
     expect(output.contains(" = ")) &&
-    expect.same("ManyFields(a = 0, b = \"\", c = false, d = 0.0)", output)
+    expect.same("ManyFields(a = 0, b = \"\", c = false, d = 0L)", output)
   }
 
   test("Repr handles special characters in string values") {
