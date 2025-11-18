@@ -56,12 +56,15 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types""")
 
           if elements.isEmpty then typeName
           else
-            val reprInstances = elemInstances.toArray.asInstanceOf[Array[Repr[Any]]]
-            val elementReprs  = elements.zip(reprInstances).map { case (elem, repr) =>
-              repr.toSourceString(elem)
+            // Convert tuple elements to array safely
+            val reprInstancesArray = elemInstances.toArray
+            val elementReprs       = elements.zipWithIndex.map { case (elem, idx) =>
+              val reprInstance = reprInstancesArray(idx).asInstanceOf[Repr[Any]]
+              reprInstance.toSourceString(elem)
             }
 
-            val labelsList = elemLabels.toArray.asInstanceOf[Array[String]]
+            val labelsArray = elemLabels.toArray
+            val labelsList  = labelsArray.map(_.asInstanceOf[String])
             if labelsList.nonEmpty && labelsList.forall(_.nonEmpty) then
               // Named parameters: Person(name = "John", age = 25)
               val namedArgs = labelsList.zip(elementReprs).map { case (label, repr) =>

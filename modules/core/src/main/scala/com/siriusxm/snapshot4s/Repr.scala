@@ -49,12 +49,12 @@ object Repr extends ReprForAdt {
   implicit val reprForFloat: Repr[Float]     = fromPprint
   implicit val reprForDouble: Repr[Double]   = fromPprint
 
-  implicit def reprForIterable[A](implicit @unused ev: Repr[A]): Repr[Iterable[A]] = fromPprint
-  implicit def reprForSeq[A](implicit @unused ev: Repr[A]): Repr[Seq[A]]           = fromPprint
-  implicit def reprForList[A](implicit @unused ev: Repr[A]): Repr[List[A]]         = fromPprint
-  implicit def reprForArray[A](implicit @unused ev: Repr[A]): Repr[Array[A]]       = fromPprint
-  implicit def reprForVector[A](implicit @unused ev: Repr[A]): Repr[Vector[A]]     = fromPprint
-  implicit def reprForOption[A](implicit @unused ev: Repr[A]): Repr[Option[A]]     = fromPprint
+  implicit def reprForIterable[A](implicit @unused ev: Repr[A]): Repr[Iterable[A]] = default
+  implicit def reprForSeq[A](implicit @unused ev: Repr[A]): Repr[Seq[A]]           = default
+  implicit def reprForList[A](implicit @unused ev: Repr[A]): Repr[List[A]]         = default
+  implicit def reprForArray[A](implicit @unused ev: Repr[A]): Repr[Array[A]]       = default
+  implicit def reprForVector[A](implicit @unused ev: Repr[A]): Repr[Vector[A]]     = default
+  implicit def reprForOption[A](implicit @unused ev: Repr[A]): Repr[Option[A]]     = default
 
   implicit def reprForEither[L, R](implicit
       @unused evL: Repr[L],

@@ -20,7 +20,7 @@ import scala.compiletime.testing.*
 
 import weaver.*
 
-object ReprSpec extends FunSuite:
+object ReprSpec extends FunSuite {
 
   case class MyCaseClass(a: String, b: Long)
 
@@ -28,9 +28,25 @@ object ReprSpec extends FunSuite:
   case object A extends MyAdt
   case object B extends MyAdt
 
-  enum MyEnum:
+  enum MyEnum {
     case X
     case Y
+  }
+
+  test("Repr produces string representation of user defined case class") {
+    val repr   = summon[Repr[MyCaseClass]]
+    val source = "MyCaseClass(a = \"Hello\", b = 10L)"
+    val input  = MyCaseClass(a = "Hello", b = 10L)
+    expect.same(source, repr.toSourceString(input))
+  }
+
+  test("Repr produces string representation of user defined accounting for custom Repr") {
+    given Repr[String] = text => s"String(\"$text\")"
+    val repr           = summon[Repr[MyCaseClass]]
+    val source         = "MyCaseClass(a = String(\"Hello\"), b = 10L)"
+    val input          = MyCaseClass(a = "Hello", b = 10L)
+    expect.same(source, repr.toSourceString(input))
+  }
 
   compilesWithoutError("obtain Repr instance for case class") {
     """
@@ -81,9 +97,10 @@ object ReprSpec extends FunSuite:
     """
   }("Could not find implicit instance for Repr[Either[Throwable, String]]")
 
-  enum MyRecursiveADT:
+  enum MyRecursiveADT {
     case Recursive(a: MyRecursiveADT)
     case Base
+  }
 
   failsCompilationWith("obtain Repr instance for recursive enum") {
     """
@@ -121,4 +138,4 @@ object ReprSpec extends FunSuite:
       expect(compilationResult.exists(_.message.contains(error)), errorMessage)
     }
 
-end ReprSpec
+}
