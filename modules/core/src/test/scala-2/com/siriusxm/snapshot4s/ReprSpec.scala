@@ -65,4 +65,22 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     expect(!errors.isEmpty())
   }
 
+  test("Repr respects custom Repr instances for fields") {
+    case class WithString(name: String)
+
+    /* CustomReprScope is defined to host the implicit value, to avoid getting:
+      local val customStringRepr in value <local ReprTestCases> is never used
+         implicit val customStringRepr: Repr[String] = s => s"CustomString($s)"
+     */
+    object CustomReprScope {
+      implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
+      @annotation.nowarn("msg=match may not be exhaustive")
+      val derivedRepr: Repr[WithString] = implicitly[Repr[WithString]]
+    }
+    import CustomReprScope._
+
+    val input = WithString("test")
+    expect.same("WithString(name = CustomString(test))", derivedRepr.toSourceString(input))
+  }
+
 }

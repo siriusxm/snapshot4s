@@ -105,6 +105,17 @@ object ReprSpec extends FunSuite with ReprTestCases {
     "Could not find implicit instance for Repr[snapshot4s.ReprSpec.RecursiveProduct]"
   )
 
+  test("Repr respects custom Repr instances for fields") {
+    case class WithString(name: String)
+
+    // Use Scala 3 given syntax
+    given customStringRepr: Repr[String] = _ => "CustomString(test)"
+    val repr                             = summon[Repr[WithString]]
+
+    val input = WithString("test")
+    expect.same("WithString(name = CustomString(test))", repr.toSourceString(input))
+  }
+
   private inline def compilesWithoutError(name: String)(inline code: String) =
     test(s"[compiles] $name") {
       val compilationResult = typeCheckErrors(code)

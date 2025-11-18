@@ -16,6 +16,8 @@
 
 package snapshot4s
 
+import scala.annotation.nowarn
+
 import weaver.*
 
 /** Shared test cases for Repr derivation that work across Scala 2 and 3.
@@ -43,30 +45,35 @@ trait ReprTestCases { self: FunSuite =>
   }
 
   test("Repr handles single field case class") {
+    @nowarn("msg=match may not be exhaustive")
     val repr  = getRepr[SingleField]
     val input = SingleField(42)
     expect.same("SingleField(x = 42)", repr.toSourceString(input))
   }
 
   test("Repr handles case class with many fields") {
+    @nowarn("msg=match may not be exhaustive")
     val repr  = getRepr[ManyFields]
     val input = ManyFields(1, "hello", true, 3.14)
     expect.same("ManyFields(a = 1, b = \"hello\", c = true, d = 3.14)", repr.toSourceString(input))
   }
 
   test("Repr handles nested case classes") {
+    @nowarn("msg=match may not be exhaustive")
     val repr  = getRepr[NestedCase]
     val input = NestedCase(SingleField(99))
     expect.same("NestedCase(inner = SingleField(x = 99))", repr.toSourceString(input))
   }
 
   test("Repr handles case class with Option field") {
+    @nowarn("msg=match may not be exhaustive")
     val repr      = getRepr[WithOption]
     val noneInput = WithOption(None)
     expect.same("WithOption(value = None)", repr.toSourceString(noneInput))
   }
 
   test("Repr handles case class with Either field") {
+    @nowarn("msg=match may not be exhaustive")
     val repr       = getRepr[WithEither]
     val leftInput  = WithEither(Left("error"))
     val rightInput = WithEither(Right(42))
@@ -80,18 +87,21 @@ trait ReprTestCases { self: FunSuite =>
   }
 
   test("Repr handles sealed trait with case class") {
+    @nowarn("msg=match may not be exhaustive")
     val repr  = getRepr[ComplexAdt]
     val input = DataCase(10, "data")
     expect.same("DataCase(x = 10, y = \"data\")", repr.toSourceString(input))
   }
 
   test("Repr handles sealed trait with case object") {
+    @nowarn("msg=match may not be exhaustive")
     val repr              = getRepr[ComplexAdt]
     val input: ComplexAdt = EmptyCase
     expect.same("EmptyCase", repr.toSourceString(input))
   }
 
   test("Repr handles special characters in values") {
+    @nowarn("msg=match may not be exhaustive")
     val repr  = getRepr[SpecialChars]
     val input = SpecialChars("Hello\nWorld", -42)
     expect.same(
@@ -100,17 +110,8 @@ trait ReprTestCases { self: FunSuite =>
     )
   }
 
-  test("Repr respects custom Repr instances for fields") {
-    case class WithString(name: String)
-
-    implicit val customStringRepr: Repr[String] = s => s"CustomString($s)"
-    val repr                                    = getRepr[WithString]
-
-    val input = WithString("test")
-    expect.same("WithString(name = CustomString(test))", repr.toSourceString(input))
-  }
-
   test("Repr uses named parameters for case classes") {
+    @nowarn("msg=match may not be exhaustive")
     val repr   = getRepr[ManyFields]
     val input  = ManyFields(0, "", false, 0.0)
     val output = repr.toSourceString(input)
@@ -120,6 +121,7 @@ trait ReprTestCases { self: FunSuite =>
   }
 
   test("Repr handles special characters in string values") {
+    @nowarn("msg=match may not be exhaustive")
     val repr  = getRepr[SingleField]
     val input = SingleField(-42)
     expect.same("SingleField(x = -42)", repr.toSourceString(input))
