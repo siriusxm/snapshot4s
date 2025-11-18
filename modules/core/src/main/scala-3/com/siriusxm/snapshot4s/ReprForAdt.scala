@@ -34,13 +34,16 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types""")
   inline def derived[A](using m: Mirror.Of[A]): Repr[A] = {
     val elemInstances = summonAll[Tuple.Map[m.MirroredElemTypes, Repr]]
 
-    inline m match  {
+    inline m match {
       case s: Mirror.SumOf[A]     => derivedSum(s, elemInstances)
       case p: Mirror.ProductOf[A] => derivedProduct(p, elemInstances)
     }
   }
 
-  private inline def derivedProduct[A](mirror: Mirror.ProductOf[A], elemInstances: Tuple): Repr[A] = {
+  private inline def derivedProduct[A](
+      mirror: Mirror.ProductOf[A],
+      elemInstances: Tuple
+  ): Repr[A] = {
     val typeName   = constValue[mirror.MirroredLabel]
     val elemLabels = constValueTuple[mirror.MirroredElemLabels]
 
