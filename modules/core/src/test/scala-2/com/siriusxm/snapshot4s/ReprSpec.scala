@@ -19,7 +19,7 @@ package snapshot4s
 import munit.internal.MacroCompat
 import weaver.*
 
-object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro {
+object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTestCases {
 
   case class MyCaseClass(a: String, b: Long)
 
@@ -28,21 +28,6 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro {
   case object B extends MyAdt
 
   class RegularClass
-
-  test("Repr produces string representation of user defined case class") {
-    val repr   = implicitly[Repr[MyCaseClass]]
-    val source = "MyCaseClass(a = \"Hello\", b = 10L)"
-    val input  = MyCaseClass(a = "Hello", b = 10L)
-    expect.same(source, repr.toSourceString(input))
-  }
-
-  test("Repr produces string representation of user defined accounting for custom Repr") {
-    implicit val reprForString: Repr[String] = text => s"""String("$text")"""
-    val repr                                 = implicitly[Repr[MyCaseClass]]
-    val source                               = "MyCaseClass(a = String(\"Hello\"), b = 10L)"
-    val input                                = MyCaseClass(a = "Hello", b = 10L)
-    expect.same(source, repr.toSourceString(input))
-  }
 
   test("obtain Repr instance for case class") {
     val errors = compileErrors("""
