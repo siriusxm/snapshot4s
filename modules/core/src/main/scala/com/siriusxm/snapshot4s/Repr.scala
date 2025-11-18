@@ -19,6 +19,7 @@ package snapshot4s
 import scala.annotation.implicitNotFound
 
 import org.typelevel.scalaccompat.annotation.unused
+
 import snapshot4s.internals.MultiLineRepr
 
 /** Repr provides a code representation for given type.

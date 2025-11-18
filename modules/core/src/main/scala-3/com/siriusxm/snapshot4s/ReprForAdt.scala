@@ -34,60 +34,51 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types""")
   inline def derived[A](using m: Mirror.Of[A]): Repr[A] =
     val elemInstances = summonAll[Tuple.Map[m.MirroredElemTypes, Repr]]
 
-    inline m match {
-      case s: Mirror.SumOf[A] => derivedSum(s, elemInstances)
+    inline m match
+      case s: Mirror.SumOf[A]     => derivedSum(s, elemInstances)
       case p: Mirror.ProductOf[A] => derivedProduct(p, elemInstances)
-    }
 
-  private inline def derivedProduct[A](mirror: Mirror.ProductOf[A], elemInstances: Tuple): Repr[A] = {
-    val typeName = constValue[mirror.MirroredLabel]
+  private inline def derivedProduct[A](mirror: Mirror.ProductOf[A], elemInstances: Tuple): Repr[A] =
+    val typeName   = constValue[mirror.MirroredLabel]
     val elemLabels = constValueTuple[mirror.MirroredElemLabels]
 
     // Extract to avoid duplication warning in inline context
-    def createProductRepr(typeName: String, elemLabels: Tuple, elemInstances: Tuple): Repr[A] = {
-      new Repr[A] {
-        def toSourceString(a: A): String = {
-          val product = a.asInstanceOf[Product]
+    def createProductRepr(typeName: String, elemLabels: Tuple, elemInstances: Tuple): Repr[A] =
+      new Repr[A]:
+        def toSourceString(a: A): String =
+          val product  = a.asInstanceOf[Product]
           val elements = product.productIterator.toArray
 
-          if (elements.isEmpty) {
-            typeName
-          } else {
+          if elements.isEmpty then typeName
+          else
             val reprInstances = elemInstances.toArray.asInstanceOf[Array[Repr[Any]]]
-            val elementReprs = elements.zip(reprInstances).map { case (elem, repr) =>
+            val elementReprs  = elements.zip(reprInstances).map { case (elem, repr) =>
               repr.toSourceString(elem)
             }
 
             val labelsList = elemLabels.toArray.asInstanceOf[Array[String]]
-            if (labelsList.nonEmpty && labelsList.forall(_.nonEmpty)) {
+            if labelsList.nonEmpty && labelsList.forall(_.nonEmpty) then
               // Named parameters: Person(name = "John", age = 25)
               val namedArgs = labelsList.zip(elementReprs).map { case (label, repr) =>
                 s"$label = $repr"
               }
               s"$typeName(${namedArgs.mkString(", ")})"
-            } else {
+            else
               // Positional parameters: Person("John", 25)
               s"$typeName(${elementReprs.mkString(", ")})"
-            }
-          }
-        }
-      }
-    }
 
     createProductRepr(typeName, elemLabels, elemInstances)
-  }
 
-  private inline def derivedSum[A](mirror: Mirror.SumOf[A], elemInstances: Tuple): Repr[A] = {
+  end derivedProduct
+
+  private inline def derivedSum[A](mirror: Mirror.SumOf[A], elemInstances: Tuple): Repr[A] =
     // Extract to avoid duplication warning in inline context
-    def createSumRepr(mirror: Mirror.SumOf[A], elemInstances: Tuple): Repr[A] = {
-      new Repr[A] {
-        def toSourceString(a: A): String = {
-          val ordinal = mirror.ordinal(a)
+    def createSumRepr(mirror: Mirror.SumOf[A], elemInstances: Tuple): Repr[A] =
+      new Repr[A]:
+        def toSourceString(a: A): String =
+          val ordinal      = mirror.ordinal(a)
           val reprInstance = elemInstances.productElement(ordinal).asInstanceOf[Repr[Any]]
           reprInstance.toSourceString(a)
-        }
-      }
-    }
 
     createSumRepr(mirror, elemInstances)
-  }
+end ReprForAdt
