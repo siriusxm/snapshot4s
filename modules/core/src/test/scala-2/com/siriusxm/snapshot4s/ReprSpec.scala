@@ -73,7 +73,7 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
          implicit val customStringRepr: Repr[String] = s => s"CustomString($s)"
      */
     object CustomReprScope {
-      implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
+      implicit val customStringRepr: Repr[String] = customReprs.string
       val repr = implicitly[Repr[WithString]]
     }
     import CustomReprScope._
@@ -83,11 +83,8 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
   }
 
   test("Repr respects custom Repr instances for lists") {
-    object CustomReprScope {
-      implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
-      val repr = implicitly[Repr[List[String]]]
-    }
-    import CustomReprScope._
+    implicit val customStringRepr: Repr[String] = customReprs.string
+    val repr = implicitly[Repr[List[String]]]
 
     val input = List("test")
     expect.same(
@@ -98,12 +95,9 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     )
   }
 
-  test("Repr respects custom Repr instances for seq") {
-    object CustomReprScope {
-      implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
-      val repr = implicitly[Repr[Seq[String]]]
-    }
-    import CustomReprScope._
+  test("Repr respects custom Repr instances for seq") {    
+    implicit val customStringRepr: Repr[String] = customReprs.string
+    val repr = implicitly[Repr[Seq[String]]]
 
     val input = Seq("test")
     expect.same(
@@ -114,12 +108,9 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     )
   }
 
-  test("Repr respects custom Repr instances for option") {
-    object CustomReprScope {
-      implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
-      val repr = implicitly[Repr[Option[String]]]
-    }
-    import CustomReprScope._
+  test("Repr respects custom Repr instances for option") {    
+    implicit val customStringRepr: Repr[String] = customReprs.string
+    val repr = implicitly[Repr[Option[String]]]
 
     val input = Some("test")
     expect.same(
@@ -130,12 +121,9 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     )
   }
 
-  test("Repr respects custom Repr instances for either") {
-    object CustomReprScope {
-      implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
-      val repr = implicitly[Repr[Either[String, String]]]
-    }
-    import CustomReprScope._
+  test("Repr respects custom Repr instances for either") {    
+    implicit val customStringRepr: Repr[String] = customReprs.string
+    val repr = implicitly[Repr[Either[String, String]]]
 
     val inputR = Right("test")
     val inputL = Left("err")
@@ -152,6 +140,10 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
         |)""".stripMargin,
       repr.toSourceString(inputL)
     )
+  }
+
+  object customReprs { 
+    implicit val string: Repr[String] = _ => "CustomString(test)"
   }
 
 }
