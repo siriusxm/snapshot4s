@@ -25,7 +25,7 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
   private val comma: String = ","
 
   private[snapshot4s] def repr[A]: Repr[A] = (a: A) => {
-    val out                             = new StringBuilder()
+    val out                = new StringBuilder()
     def loop(a: Any): Unit = {
       a match {
         case null    => out.append("null")
@@ -85,7 +85,7 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
   private[snapshot4s] def printApply[T](
       prefix: String,
       it: Iterator[T],
-      out: StringBuilder,
+      out: StringBuilder
   )(fn: T => Unit): Unit = {
     out.append(prefix)
     out.append(open)

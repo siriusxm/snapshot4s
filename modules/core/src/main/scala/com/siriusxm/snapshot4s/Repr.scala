@@ -49,59 +49,74 @@ object Repr extends ReprForAdt {
   implicit val reprForFloat: Repr[Float]     = default
   implicit val reprForDouble: Repr[Double]   = default
 
-  implicit def reprForIterable[A](implicit @unused ev: Repr[A]): Repr[Iterable[A]] = reprForCollection[A, Iterable]
-  implicit def reprForSeq[A](implicit @unused ev: Repr[A]): Repr[Seq[A]]           = reprForCollection[A, Seq]("Seq")
-  implicit def reprForList[A](implicit @unused ev: Repr[A]): Repr[List[A]]         = reprForCollection[A, List]
-  implicit def reprForArray[A](implicit @unused ev: Repr[A]): Repr[Array[A]]       = new Repr[Array[A]] {
+  implicit def reprForIterable[A](implicit @unused ev: Repr[A]): Repr[Iterable[A]] =
+    reprForCollection[A, Iterable]
+  implicit def reprForSeq[A](implicit @unused ev: Repr[A]): Repr[Seq[A]] =
+    reprForCollection[A, Seq]("Seq")
+  implicit def reprForList[A](implicit @unused ev: Repr[A]): Repr[List[A]] =
+    reprForCollection[A, List]
+
+  implicit def reprForArray[A](implicit @unused ev: Repr[A]): Repr[Array[A]] = new Repr[Array[A]] {
     def toSourceString(x: Array[A]): String = iteratorToSourceString(x.iterator, "Array")
   }
 
-  implicit def reprForVector[A](implicit @unused ev: Repr[A]): Repr[Vector[A]]     = reprForCollection[A, Vector]
-  implicit def reprForOption[A](implicit @unused ev: Repr[A]): Repr[Option[A]]     = new Repr[Option[A]] {
-    def toSourceString(x: Option[A]): String = 
-      x match {
-        case None => "None"
-        case Some(_) => iteratorToSourceString(x.iterator, "Some")
-      }
-  }
+  implicit def reprForVector[A](implicit @unused ev: Repr[A]): Repr[Vector[A]] =
+    reprForCollection[A, Vector]
+
+  implicit def reprForOption[A](implicit @unused ev: Repr[A]): Repr[Option[A]] =
+    new Repr[Option[A]] {
+      def toSourceString(x: Option[A]): String =
+        x match {
+          case None    => "None"
+          case Some(_) => iteratorToSourceString(x.iterator, "Some")
+        }
+    }
 
   implicit def reprForEither[L, R](implicit
       @unused evL: Repr[L],
       @unused evR: Repr[R]
   ): Repr[Either[L, R]] = new Repr[Either[L, R]] {
-    def toSourceString(x: Either[L, R]): String = 
+    def toSourceString(x: Either[L, R]): String =
       x match {
-        case Left(err) => iteratorToSourceString(Iterator(err), "Left")
+        case Left(err)    => iteratorToSourceString(Iterator(err), "Left")
         case Right(value) => iteratorToSourceString(Iterator(value), "Right")
       }
   }
 
-  private def reprForCollection[A, Collection[A] <: Iterable[A]](classNameOverride: String)(implicit ev: Repr[A]) =
+  private def reprForCollection[A, Collection[A] <: Iterable[A]](
+      classNameOverride: String
+  )(implicit ev: Repr[A]) =
     new Repr[Collection[A]] {
-      def toSourceString(x: Collection[A]): String = iteratorToSourceString(x.iterator, classNameOverride)
+      def toSourceString(x: Collection[A]): String =
+        iteratorToSourceString(x.iterator, classNameOverride)
     }
 
   private def reprForCollection[A, Collection[A] <: Iterable[A]](implicit ev: Repr[A]) =
     new Repr[Collection[A]] {
-      def toSourceString(x: Collection[A]): String = iteratorToSourceString(x.iterator, MultiLineRepr.collectionClassName(x))
+      def toSourceString(x: Collection[A]): String =
+        iteratorToSourceString(x.iterator, MultiLineRepr.collectionClassName(x))
     }
 
-  private def iteratorToSourceString[A](x: Iterator[A], className: String)(implicit ev: Repr[A]): String = {
+  private def iteratorToSourceString[A](x: Iterator[A], className: String)(implicit
+      ev: Repr[A]
+  ): String = {
     val out = new StringBuilder()
     MultiLineRepr.printApply[A](
       className,
       x,
-      out,
+      out
     )(value => out.append(ev.toSourceString(value)))
     out.toString
   }
 
   // Creates Repr instance based on pprint
-  @deprecated("This method is no longer recommended and will be removed in future releases. Use `default` instead.", "0.3.0")
+  @deprecated(
+    "This method is no longer recommended and will be removed in future releases. Use `default` instead.",
+    "0.3.0"
+  )
   def fromPprint[A]: Repr[A] = (a: A) =>
     // width and height are overridden to handle very large snapshots
     pprint.apply(a, width = 200, height = 99999999).plainText
-
 
   def default[A]: Repr[A] = MultiLineRepr.repr[A]
 

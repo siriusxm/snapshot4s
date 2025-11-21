@@ -80,12 +80,18 @@ trait ReprTestCases { self: FunSuite =>
 
     val leftOutput  = repr.toSourceString(leftInput)
     val rightOutput = repr.toSourceString(rightInput)
-    expect.same("""WithEither(value = Left(
+    expect.same(
+      """WithEither(value = Left(
     |"error"
-    |))""".stripMargin, leftOutput) &&
-    expect.same("""WithEither(value = Right(
+    |))""".stripMargin,
+      leftOutput
+    ) &&
+    expect.same(
+      """WithEither(value = Right(
     |42
-    |))""".stripMargin, rightOutput) 
+    |))""".stripMargin,
+      rightOutput
+    )
   }
 
   test("Repr handles sealed trait with case class") {

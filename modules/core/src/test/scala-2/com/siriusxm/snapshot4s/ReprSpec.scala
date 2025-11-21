@@ -92,9 +92,12 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     import CustomReprScope._
 
     val input = List("test")
-    expect.same("""List(
+    expect.same(
+      """List(
     |CustomString(test)
-    |)""".stripMargin, repr.toSourceString(input))
+    |)""".stripMargin,
+      repr.toSourceString(input)
+    )
   }
 
   test("Repr respects custom Repr instances for seq") {
@@ -106,9 +109,12 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     import CustomReprScope._
 
     val input = Seq("test")
-    expect.same("""Seq(
+    expect.same(
+      """Seq(
     |CustomString(test)
-    |)""".stripMargin, repr.toSourceString(input))
+    |)""".stripMargin,
+      repr.toSourceString(input)
+    )
   }
 
   test("Repr respects custom Repr instances for option") {
@@ -120,10 +126,14 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     import CustomReprScope._
 
     val input = Some("test")
-    expect.same("""Some(
+    expect.same(
+      """Some(
     |CustomString(test)
-    |)""".stripMargin, repr.toSourceString(input))
+    |)""".stripMargin,
+      repr.toSourceString(input)
+    )
   }
+
   test("Repr respects custom Repr instances for either") {
     object CustomReprScope {
       implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
@@ -135,12 +145,18 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     val inputR = Right("test")
     val inputL = Left("err")
 
-    expect.same("""Right(
+    expect.same(
+      """Right(
     |CustomString(test)
-    |)""".stripMargin, repr.toSourceString(inputR)) &&
-      expect.same("""Left(
+    |)""".stripMargin,
+      repr.toSourceString(inputR)
+    ) &&
+    expect.same(
+      """Left(
         |CustomString(test)
-        |)""".stripMargin, repr.toSourceString(inputL))
+        |)""".stripMargin,
+      repr.toSourceString(inputL)
+    )
   }
 
 }
