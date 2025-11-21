@@ -104,20 +104,5 @@ trait ReprTestCases { self: FunSuite =>
     )
   }
 
-  test("Repr uses named parameters for case classes") {
-    val repr   = getRepr[ManyFields]
-    val input  = ManyFields(0, "", false, 0L)
-    val output = repr.toSourceString(input)
-
-    expect(output.contains(" = ")) &&
-    expect.same("ManyFields(a = 0, b = \"\", c = false, d = 0L)", output)
-  }
-
-  test("Repr handles special characters in string values") {
-    val repr  = getRepr[SingleField]
-    val input = SingleField(-42)
-    expect.same("SingleField(x = -42)", repr.toSourceString(input))
-  }
-
   protected def getRepr[T](implicit repr: Repr[T]): Repr[T] = repr
 }

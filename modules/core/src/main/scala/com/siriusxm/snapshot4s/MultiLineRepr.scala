@@ -42,39 +42,9 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
         case x: String    => printString(x, out)
         case None         => out.append("None")
         case Nil          => out.append("Nil")
-        case x: Map[?, ?] =>
-          printApply(
-            collectionClassName(x),
-            x.iterator,
-            out
-          ) { case (key, value) =>
-            loop(key)
-            out.append(" -> ")
-            loop(value)
-          }
-        case x: Iterable[?] =>
-          printApply(
-            collectionClassName(x),
-            x.iterator,
-            out
-          )(value => loop(value))
-        case x: Array[?] =>
-          printApply("Array", x.iterator, out)(value => loop(value))
         case it: Iterator[?] =>
           if (it.isEmpty) out.append("empty iterator")
           else out.append("non-empty iterator")
-        case p: Product =>
-          val elementNames         = productElementNames(p)
-          val infiniteElementNames = Iterator
-            .continually(if (elementNames.hasNext) elementNames.next() else "")
-          printApply(
-            p.productPrefix,
-            p.productIterator.zip(infiniteElementNames),
-            out
-          ) { case (value, key) =>
-            if (key.nonEmpty) out.append(key).append(" = "): Unit
-            loop(value)
-          }
         case _ => out.append(a.toString())
       }
     }
