@@ -75,12 +75,72 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     object CustomReprScope {
       implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
       @annotation.nowarn("msg=match may not be exhaustive")
-      val derivedRepr: Repr[WithString] = implicitly[Repr[WithString]]
+      val repr = implicitly[Repr[WithString]]
     }
     import CustomReprScope._
 
     val input = WithString("test")
-    expect.same("WithString(name = CustomString(test))", derivedRepr.toSourceString(input))
+    expect.same("WithString(name = CustomString(test))", repr.toSourceString(input))
+  }
+
+  test("Repr respects custom Repr instances for lists") {
+    object CustomReprScope {
+      implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
+      @annotation.nowarn("msg=match may not be exhaustive")
+      val repr = implicitly[Repr[List[String]]]
+    }
+    import CustomReprScope._
+
+    val input = List("test")
+    expect.same("""List(
+    |CustomString(test)
+    |)""".stripMargin, repr.toSourceString(input))
+  }
+
+  test("Repr respects custom Repr instances for seq") {
+    object CustomReprScope {
+      implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
+      @annotation.nowarn("msg=match may not be exhaustive")
+      val repr = implicitly[Repr[Seq[String]]]
+    }
+    import CustomReprScope._
+
+    val input = Seq("test")
+    expect.same("""Seq(
+    |CustomString(test)
+    |)""".stripMargin, repr.toSourceString(input))
+  }
+
+  test("Repr respects custom Repr instances for option") {
+    object CustomReprScope {
+      implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
+      @annotation.nowarn("msg=match may not be exhaustive")
+      val repr = implicitly[Repr[Option[String]]]
+    }
+    import CustomReprScope._
+
+    val input = Some("test")
+    expect.same("""Some(
+    |CustomString(test)
+    |)""".stripMargin, repr.toSourceString(input))
+  }
+  test("Repr respects custom Repr instances for either") {
+    object CustomReprScope {
+      implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
+      @annotation.nowarn("msg=match may not be exhaustive")
+      val repr = implicitly[Repr[Either[String, String]]]
+    }
+    import CustomReprScope._
+
+    val inputR = Right("test")
+    val inputL = Left("err")
+
+    expect.same("""Right(
+    |CustomString(test)
+    |)""".stripMargin, repr.toSourceString(inputR)) &&
+      expect.same("""Left(
+        |CustomString(test)
+        |)""".stripMargin, repr.toSourceString(inputL))
   }
 
 }

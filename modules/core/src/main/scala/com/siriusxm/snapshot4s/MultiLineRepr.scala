@@ -82,7 +82,7 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
     out.toString()
   }
 
-  private def printApply[T](
+  private[snapshot4s] def printApply[T](
       prefix: String,
       it: Iterator[T],
       out: StringBuilder,

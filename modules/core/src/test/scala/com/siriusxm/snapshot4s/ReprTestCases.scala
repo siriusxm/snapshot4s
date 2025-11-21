@@ -81,10 +81,10 @@ trait ReprTestCases { self: FunSuite =>
     val leftOutput  = repr.toSourceString(leftInput)
     val rightOutput = repr.toSourceString(rightInput)
     expect.same("""WithEither(value = Left(
-    |value = "error"
+    |"error"
     |))""".stripMargin, leftOutput) &&
     expect.same("""WithEither(value = Right(
-    |value = 42
+    |42
     |))""".stripMargin, rightOutput) 
   }
 
