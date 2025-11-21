@@ -38,16 +38,16 @@ trait Repr[A] {
 
 object Repr extends ReprForAdt {
 
-  implicit val reprForString: Repr[String] = fromPprint
-  implicit val reprForChar: Repr[Char]     = fromPprint
-  implicit val reprForUnit: Repr[Unit]     = fromPprint
+  implicit val reprForString: Repr[String] = default
+  implicit val reprForChar: Repr[Char]     = default
+  implicit val reprForUnit: Repr[Unit]     = default
 
-  implicit val reprForBoolean: Repr[Boolean] = fromPprint
-  implicit val reprForShort: Repr[Short]     = fromPprint
-  implicit val reprForInt: Repr[Int]         = fromPprint
-  implicit val reprForLong: Repr[Long]       = fromPprint
-  implicit val reprForFloat: Repr[Float]     = fromPprint
-  implicit val reprForDouble: Repr[Double]   = fromPprint
+  implicit val reprForBoolean: Repr[Boolean] = default
+  implicit val reprForShort: Repr[Short]     = default
+  implicit val reprForInt: Repr[Int]         = default
+  implicit val reprForLong: Repr[Long]       = default
+  implicit val reprForFloat: Repr[Float]     = default
+  implicit val reprForDouble: Repr[Double]   = default
 
   implicit def reprForIterable[A](implicit @unused ev: Repr[A]): Repr[Iterable[A]] = default
   implicit def reprForSeq[A](implicit @unused ev: Repr[A]): Repr[Seq[A]]           = default
@@ -59,7 +59,7 @@ object Repr extends ReprForAdt {
   implicit def reprForEither[L, R](implicit
       @unused evL: Repr[L],
       @unused evR: Repr[R]
-  ): Repr[Either[L, R]] = fromPprint
+  ): Repr[Either[L, R]] = default
 
   // Creates Repr instance based on pprint
   def fromPprint[A]: Repr[A] = (a: A) =>

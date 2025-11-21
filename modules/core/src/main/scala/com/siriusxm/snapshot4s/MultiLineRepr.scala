@@ -38,7 +38,7 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
         case x: Byte      => out.append(x.toString())
         case x: Short     => out.append(x.toString())
         case x: Int       => out.append(x.toString())
-        case x: Long      => out.append(x.toString())
+        case x: Long      => out.append(s"${x.toString()}L")
         case x: Float     => out.append(x.toString())
         case x: Double    => out.append(x.toString())
         case x: String    => printString(filterAnsi(x), out)

@@ -78,12 +78,14 @@ trait ReprTestCases { self: FunSuite =>
     val leftInput  = WithEither(Left("error"))
     val rightInput = WithEither(Right(42))
 
-    // Either formatting may vary between Scala 2 and 3 - so we only test the contains to be uniform
     val leftOutput  = repr.toSourceString(leftInput)
     val rightOutput = repr.toSourceString(rightInput)
-
-    expect(leftOutput.contains("Left") && leftOutput.contains("\"error\"")) &&
-    expect(rightOutput.contains("Right") && rightOutput.contains("42"))
+    expect.same("""WithEither(value = Left(
+    | value = "error"
+    | ))""".stripMargin, leftOutput) &&
+    expect.same("""WithEither(value = Right(
+    | value = 42
+    | ))""".stripMargin, rightOutput) 
   }
 
   test("Repr handles sealed trait with case class") {
