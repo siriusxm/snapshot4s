@@ -20,6 +20,8 @@ import scala.annotation.implicitNotFound
 
 import org.typelevel.scalaccompat.annotation.unused
 
+import snapshot4s.internals.MultiLineRepr
+
 /** Repr provides a code representation for given type.
   * It serves the purpose of serializing data structure
   * into sources when building new snapshot candidate.
@@ -36,32 +38,106 @@ trait Repr[A] {
 
 object Repr extends ReprForAdt {
 
-  implicit val reprForString: Repr[String] = fromPprint
-  implicit val reprForChar: Repr[Char]     = fromPprint
-  implicit val reprForUnit: Repr[Unit]     = fromPprint
+  implicit val reprForString: Repr[String] = default
+  implicit val reprForChar: Repr[Char]     = default
+  implicit val reprForUnit: Repr[Unit]     = default
 
-  implicit val reprForBoolean: Repr[Boolean] = fromPprint
-  implicit val reprForShort: Repr[Short]     = fromPprint
-  implicit val reprForInt: Repr[Int]         = fromPprint
-  implicit val reprForLong: Repr[Long]       = fromPprint
-  implicit val reprForFloat: Repr[Float]     = fromPprint
-  implicit val reprForDouble: Repr[Double]   = fromPprint
+  implicit val reprForBoolean: Repr[Boolean] = default
+  implicit val reprForShort: Repr[Short]     = default
+  implicit val reprForInt: Repr[Int]         = default
+  implicit val reprForLong: Repr[Long]       = default
+  implicit val reprForFloat: Repr[Float]     = default
+  implicit val reprForDouble: Repr[Double]   = default
 
-  implicit def reprForIterable[A](implicit @unused ev: Repr[A]): Repr[Iterable[A]] = fromPprint
-  implicit def reprForSeq[A](implicit @unused ev: Repr[A]): Repr[Seq[A]]           = fromPprint
-  implicit def reprForList[A](implicit @unused ev: Repr[A]): Repr[List[A]]         = fromPprint
-  implicit def reprForArray[A](implicit @unused ev: Repr[A]): Repr[Array[A]]       = fromPprint
-  implicit def reprForVector[A](implicit @unused ev: Repr[A]): Repr[Vector[A]]     = fromPprint
-  implicit def reprForOption[A](implicit @unused ev: Repr[A]): Repr[Option[A]]     = fromPprint
+  implicit def reprForIterable[A](implicit @unused ev: Repr[A]): Repr[Iterable[A]] =
+    reprForCollection[A, Iterable]
+  implicit def reprForSeq[A](implicit @unused ev: Repr[A]): Repr[Seq[A]] =
+    reprForCollection[A, Seq]("Seq")
+  implicit def reprForList[A](implicit @unused ev: Repr[A]): Repr[List[A]] =
+    reprForCollection[A, List]
+
+  implicit def reprForArray[A](implicit @unused ev: Repr[A]): Repr[Array[A]] = new Repr[Array[A]] {
+    def toSourceString(x: Array[A]): String = iteratorToSourceString(x.iterator, "Array")
+  }
+
+  implicit def reprForVector[A](implicit @unused ev: Repr[A]): Repr[Vector[A]] =
+    reprForCollection[A, Vector]
+
+  implicit def reprForOption[A](implicit @unused ev: Repr[A]): Repr[Option[A]] =
+    new Repr[Option[A]] {
+      def toSourceString(x: Option[A]): String =
+        x match {
+          case None    => "None"
+          case Some(_) => iteratorToSourceString(x.iterator, "Some")
+        }
+    }
+
+  implicit def reprForMap[K, V](implicit @unused evK: Repr[K], evV: Repr[V]): Repr[Map[K, V]] =
+    new Repr[Map[K, V]] {
+      def toSourceString(x: Map[K, V]): String = mapToSourceString(x)
+    }
 
   implicit def reprForEither[L, R](implicit
       @unused evL: Repr[L],
       @unused evR: Repr[R]
-  ): Repr[Either[L, R]] = fromPprint
+  ): Repr[Either[L, R]] = new Repr[Either[L, R]] {
+    def toSourceString(x: Either[L, R]): String =
+      x match {
+        case Left(err)    => iteratorToSourceString(Iterator(err), "Left")
+        case Right(value) => iteratorToSourceString(Iterator(value), "Right")
+      }
+  }
+
+  private def reprForCollection[A, Collection[A] <: Iterable[A]](
+      classNameOverride: String
+  )(implicit ev: Repr[A]) =
+    new Repr[Collection[A]] {
+      def toSourceString(x: Collection[A]): String =
+        iteratorToSourceString(x.iterator, classNameOverride)
+    }
+
+  private def reprForCollection[A, Collection[A] <: Iterable[A]](implicit ev: Repr[A]) =
+    new Repr[Collection[A]] {
+      def toSourceString(x: Collection[A]): String =
+        iteratorToSourceString(x.iterator, MultiLineRepr.collectionClassName(x))
+    }
+
+  private def iteratorToSourceString[A](x: Iterator[A], className: String)(implicit
+      ev: Repr[A]
+  ): String = {
+    val out = new StringBuilder()
+    MultiLineRepr.printApply[A](
+      className,
+      x,
+      out
+    )(value => out.append(ev.toSourceString(value)))
+    out.toString
+  }
+
+  private def mapToSourceString[K, V](x: Map[K, V])(implicit
+      evK: Repr[K],
+      evV: Repr[V]
+  ): String = {
+    val out = new StringBuilder()
+    MultiLineRepr.printApply[(K, V)](
+      "Map",
+      x.toList.iterator,
+      out
+    )(kv =>
+      out.append(evK.toSourceString(kv._1)).append(" -> ").append(evV.toSourceString(kv._2)): Unit
+    )
+    out.toString
+  }
 
   // Creates Repr instance based on pprint
+  @deprecated(
+    "This method is no longer recommended and will be removed in future releases. Use `default` instead.",
+    "0.3.0"
+  )
   def fromPprint[A]: Repr[A] = (a: A) =>
     // width and height are overridden to handle very large snapshots
     pprint.apply(a, width = 200, height = 99999999).plainText
+
+  def default[A]: Repr[A] = MultiLineRepr.repr[A]
 
 }

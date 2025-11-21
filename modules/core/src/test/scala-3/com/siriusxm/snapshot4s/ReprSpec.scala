@@ -20,7 +20,7 @@ import scala.compiletime.testing.*
 
 import weaver.*
 
-object ReprSpec extends FunSuite:
+object ReprSpec extends FunSuite with ReprTestCases {
 
   case class MyCaseClass(a: String, b: Long)
 
@@ -28,9 +28,10 @@ object ReprSpec extends FunSuite:
   case object A extends MyAdt
   case object B extends MyAdt
 
-  enum MyEnum:
+  enum MyEnum {
     case X
     case Y
+  }
 
   compilesWithoutError("obtain Repr instance for case class") {
     """
@@ -81,9 +82,10 @@ object ReprSpec extends FunSuite:
     """
   }("Could not find implicit instance for Repr[Either[Throwable, String]]")
 
-  enum MyRecursiveADT:
+  enum MyRecursiveADT {
     case Recursive(a: MyRecursiveADT)
     case Base
+  }
 
   failsCompilationWith("obtain Repr instance for recursive enum") {
     """
@@ -103,6 +105,64 @@ object ReprSpec extends FunSuite:
     "Could not find implicit instance for Repr[snapshot4s.ReprSpec.RecursiveProduct]"
   )
 
+  test("Repr respects custom Repr instances for fields") {
+    case class WithString(name: String)
+
+    // Use Scala 3 given syntax
+    given customStringRepr: Repr[String] = _ => "CustomString(test)"
+    val repr                             = summon[Repr[WithString]]
+
+    val input = WithString("test")
+    expect.same("WithString(name = CustomString(test))", repr.toSourceString(input))
+  }
+
+  test("Repr respects custom Repr instances for lists") {
+    import customStringRepr.given
+    val repr = summon[Repr[List[String]]]
+
+    val input = List("test")
+    expect.same("List(CustomString(test))", repr.toSourceString(input))
+  }
+
+  test("Repr respects custom Repr instances for seq") {
+    import customStringRepr.given
+    val repr = summon[Repr[Seq[String]]]
+
+    val input = Seq("test")
+    expect.same("Seq(CustomString(test))", repr.toSourceString(input))
+  }
+
+  test("Repr respects custom Repr instances for option") {
+    import customStringRepr.given
+    val repr = summon[Repr[Option[String]]]
+
+    val input = Some("test")
+    expect.same("Some(CustomString(test))", repr.toSourceString(input))
+  }
+
+  test("Repr respects custom Repr instances for either") {
+    import customStringRepr.given
+    val repr = summon[Repr[Either[String, String]]]
+
+    val inputR = Right("test")
+    val inputL = Left("err")
+
+    expect.same("Right(CustomString(test))", repr.toSourceString(inputR)) &&
+    expect.same("Left(CustomString(test))", repr.toSourceString(inputL))
+  }
+
+  test("Repr respects custom Repr instances for map") {
+    import customStringRepr.given
+    val repr = summon[Repr[Map[String, Int]]]
+
+    val input = Map("test" -> 42)
+    expect.same("Map(CustomString(test) -> 42)", repr.toSourceString(input))
+  }
+
+  object customStringRepr {
+    given customStringRepr: Repr[String] = _ => "CustomString(test)"
+  }
+
   private inline def compilesWithoutError(name: String)(inline code: String) =
     test(s"[compiles] $name") {
       val compilationResult = typeCheckErrors(code)
@@ -121,4 +181,4 @@ object ReprSpec extends FunSuite:
       expect(compilationResult.exists(_.message.contains(error)), errorMessage)
     }
 
-end ReprSpec
+}
