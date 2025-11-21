@@ -74,7 +74,6 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
      */
     object CustomReprScope {
       implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
-      @annotation.nowarn("msg=match may not be exhaustive")
       val repr = implicitly[Repr[WithString]]
     }
     import CustomReprScope._
@@ -86,7 +85,6 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
   test("Repr respects custom Repr instances for lists") {
     object CustomReprScope {
       implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
-      @annotation.nowarn("msg=match may not be exhaustive")
       val repr = implicitly[Repr[List[String]]]
     }
     import CustomReprScope._
@@ -103,7 +101,6 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
   test("Repr respects custom Repr instances for seq") {
     object CustomReprScope {
       implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
-      @annotation.nowarn("msg=match may not be exhaustive")
       val repr = implicitly[Repr[Seq[String]]]
     }
     import CustomReprScope._
@@ -120,7 +117,6 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
   test("Repr respects custom Repr instances for option") {
     object CustomReprScope {
       implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
-      @annotation.nowarn("msg=match may not be exhaustive")
       val repr = implicitly[Repr[Option[String]]]
     }
     import CustomReprScope._
@@ -137,7 +133,6 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
   test("Repr respects custom Repr instances for either") {
     object CustomReprScope {
       implicit val customStringRepr: Repr[String] = _ => "CustomString(test)"
-      @annotation.nowarn("msg=match may not be exhaustive")
       val repr = implicitly[Repr[Either[String, String]]]
     }
     import CustomReprScope._
