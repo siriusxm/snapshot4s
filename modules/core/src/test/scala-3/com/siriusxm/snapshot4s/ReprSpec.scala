@@ -151,6 +151,14 @@ object ReprSpec extends FunSuite with ReprTestCases {
     expect.same("Left(CustomString(test))", repr.toSourceString(inputL))
   }
 
+  test("Repr respects custom Repr instances for map") {
+    import customStringRepr.given
+    val repr = summon[Repr[Map[String, Int]]]
+
+    val input = Map("test" -> 42)
+    expect.same("Map(CustomString(test) -> 42)", repr.toSourceString(input))
+  }
+
   object customStringRepr {
     given customStringRepr: Repr[String] = _ => "CustomString(test)"
   }

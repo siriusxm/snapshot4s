@@ -72,6 +72,11 @@ object Repr extends ReprForAdt {
         }
     }
 
+  implicit def reprForMap[K, V](implicit @unused evK: Repr[K], evV: Repr[V]): Repr[Map[K, V]] =
+    new Repr[Map[K, V]] {
+      def toSourceString(x: Map[K, V]): String = mapToSourceString(x)
+    }
+
   implicit def reprForEither[L, R](implicit
       @unused evL: Repr[L],
       @unused evR: Repr[R]
@@ -106,6 +111,21 @@ object Repr extends ReprForAdt {
       x,
       out
     )(value => out.append(ev.toSourceString(value)))
+    out.toString
+  }
+
+  private def mapToSourceString[K, V](x: Map[K, V])(implicit
+      evK: Repr[K],
+      evV: Repr[V]
+  ): String = {
+    val out = new StringBuilder()
+    MultiLineRepr.printApply[(K, V)](
+      "Map",
+      x.toList.iterator,
+      out
+    )(kv =>
+      out.append(evK.toSourceString(kv._1)).append(" -> ").append(evV.toSourceString(kv._2)): Unit
+    )
     out.toString
   }
 

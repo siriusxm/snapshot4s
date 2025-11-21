@@ -117,6 +117,14 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     expect.same("Left(CustomString(test))", repr.toSourceString(inputL))
   }
 
+  test("Repr respects custom Repr instances for map") {
+    implicit val customStringRepr: Repr[String] = customReprs.string
+    val repr                                    = implicitly[Repr[Map[String, Int]]]
+
+    val input = Map("test" -> 42)
+    expect.same("Map(CustomString(test) -> 42)", repr.toSourceString(input))
+  }
+
   object customReprs {
     implicit val string: Repr[String] = _ => "CustomString(test)"
   }
