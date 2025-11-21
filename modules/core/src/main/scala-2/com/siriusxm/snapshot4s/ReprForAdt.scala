@@ -76,11 +76,11 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
         }
       """)
     } else {
-      val params = paramLists.head
+      val params                 = paramLists.head
       val labelsAndReprInstances = params.map { param =>
-        val label = param.name.decodedName.toString
+        val label     = param.name.decodedName.toString
         val paramType = param.typeSignature.finalResultType
-        val repr = q"implicitly[_root_.snapshot4s.Repr[$paramType]].asInstanceOf[Repr[Any]]"
+        val repr      = q"implicitly[_root_.snapshot4s.Repr[$paramType]].asInstanceOf[Repr[Any]]"
         q"($label, $repr)"
       }
       c.Expr[Repr[A]](q"""

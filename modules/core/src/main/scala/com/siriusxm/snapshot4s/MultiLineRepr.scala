@@ -90,21 +90,16 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
     out.append(prefix)
     out.append(open)
     if (it.hasNext) {
-      printNewline(out)
       while (it.hasNext) {
         val value = it.next()
         fn(value)
         if (it.hasNext) {
           out.append(comma)
-          printNewline(out)
-        } else printNewline(out)
+        }
       }
     }
     out.append(close)
   }
-
-  private def printNewline(out: StringBuilder): Unit =
-    out.append("\n")
 
   private def printString(
       string: String,
