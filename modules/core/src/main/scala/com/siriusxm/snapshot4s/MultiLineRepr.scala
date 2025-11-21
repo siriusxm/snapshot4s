@@ -23,12 +23,10 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
   private val open: String  = "("
   private val close: String = ")"
   private val comma: String = ","
-  private val indentStep    = 1
 
   private[snapshot4s] def repr[A]: Repr[A] = (a: A) => {
     val out                             = new StringBuilder()
-    def loop(a: Any, indent: Int): Unit = {
-      val nextIndent = indent + indentStep
+    def loop(a: Any): Unit = {
       a match {
         case null    => out.append("null")
         case x: Char =>
@@ -48,24 +46,20 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
           printApply(
             collectionClassName(x),
             x.iterator,
-            out,
-            indent,
-            nextIndent
+            out
           ) { case (key, value) =>
-            loop(key, nextIndent)
+            loop(key)
             out.append(" -> ")
-            loop(value, nextIndent)
+            loop(value)
           }
         case x: Iterable[?] =>
           printApply(
             collectionClassName(x),
             x.iterator,
-            out,
-            indent,
-            nextIndent
-          )(value => loop(value, nextIndent))
+            out
+          )(value => loop(value))
         case x: Array[?] =>
-          printApply("Array", x.iterator, out, indent, nextIndent)(value => loop(value, nextIndent))
+          printApply("Array", x.iterator, out)(value => loop(value))
         case it: Iterator[?] =>
           if (it.isEmpty) out.append("empty iterator")
           else out.append("non-empty iterator")
@@ -76,17 +70,15 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
           printApply(
             p.productPrefix,
             p.productIterator.zip(infiniteElementNames),
-            out,
-            indent,
-            nextIndent
+            out
           ) { case (value, key) =>
             if (key.nonEmpty) out.append(key).append(" = "): Unit
-            loop(value, nextIndent)
+            loop(value)
           }
         case _ => out.append(a.toString())
       }
     }
-    loop(a, indent = 0)
+    loop(a)
     out.toString()
   }
 
@@ -94,29 +86,25 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
       prefix: String,
       it: Iterator[T],
       out: StringBuilder,
-      indent: Int,
-      nextIndent: Int
   )(fn: T => Unit): Unit = {
     out.append(prefix)
     out.append(open)
     if (it.hasNext) {
-      printNewline(out, nextIndent)
+      printNewline(out)
       while (it.hasNext) {
         val value = it.next()
         fn(value)
         if (it.hasNext) {
           out.append(comma)
-          printNewline(out, nextIndent)
-        } else printNewline(out, indent)
+          printNewline(out)
+        } else printNewline(out)
       }
     }
     out.append(close)
   }
 
-  private def printNewline(out: StringBuilder, indent: Int): Unit = {
+  private def printNewline(out: StringBuilder): Unit =
     out.append("\n")
-    Range(0, indent).foreach(out.append(' '))
-  }
 
   private def printString(
       string: String,
