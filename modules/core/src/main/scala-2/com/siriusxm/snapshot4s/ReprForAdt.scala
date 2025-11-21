@@ -77,53 +77,24 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
       """)
     } else {
       val params = paramLists.head
-
-      val fieldAccessors = params.zipWithIndex.map { case (param, index) =>
-        val paramName = param.name.decodedName.toString
+      val labelsAndReprInstances = params.map { param =>
+        val label = param.name.decodedName.toString
         val paramType = param.typeSignature.finalResultType
-
-        (paramName, paramType, index)
+        val repr = q"implicitly[_root_.snapshot4s.Repr[$paramType]].asInstanceOf[Repr[Any]]"
+        q"($label, $repr)"
       }
-
-      // Generate match cases for each field type
-      val matchCases = fieldAccessors.map { case (_, paramType, index) =>
-        cq"""_ if index == $index => implicitly[_root_.snapshot4s.Repr[$paramType]].toSourceString(elem.asInstanceOf[$paramType])"""
-      }
-
-      val fieldNameLiterals = fieldAccessors.map { case (paramName, _, _) => q"$paramName" }
-
       c.Expr[Repr[A]](q"""
         new _root_.snapshot4s.Repr[$tpe] {
           def toSourceString(a: $tpe): String = {
             val product = a.asInstanceOf[Product]
-            val elements = product.productIterator.toArray
-
-            if (elements.isEmpty) {
-              $typeName
-            } else {
-              // Get representations for each element
-              val elementReprs = elements.zipWithIndex.map { case (elem, index) =>
-                elem match {
-                  case ..$matchCases
-                }
+            val elements = product.productIterator.toList
+            val labelsAndReprInstances = List(..$labelsAndReprInstances)
+              val namedArgs = elements.zip(labelsAndReprInstances).map { case (elem, (label, repr)) =>
+                label + " = " + repr.toSourceString(elem)
               }
-
-              // Field names for named parameter format
-              val fieldNames = Array(..$fieldNameLiterals)
-
-              if (fieldNames.nonEmpty && fieldNames.forall(_.nonEmpty)) {
-                // Named parameters: Person(name = "John", age = 25)
-                val namedArgs = fieldNames.zip(elementReprs).map { case (label, repr) =>
-                  label + " = " + repr
-                }
-                $typeName + "(" + namedArgs.mkString(", ") + ")"
-              } else {
-                // Positional parameters: Person("John", 25)
-                $typeName + "(" + elementReprs.mkString(", ") + ")"
-              }
-            }
-          }
+              $typeName + "(" + namedArgs.mkString(", ") + ")"
         }
+      }
       """)
     }
   }

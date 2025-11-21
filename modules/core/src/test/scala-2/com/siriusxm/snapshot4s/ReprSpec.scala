@@ -74,7 +74,6 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
      */
     object CustomReprScope {
       implicit val customStringRepr: Repr[String] = customReprs.string
-      @scala.annotation.nowarn("msg=match may not be exhaustive")
       val repr                                    = implicitly[Repr[WithString]]
     }
     import CustomReprScope._
