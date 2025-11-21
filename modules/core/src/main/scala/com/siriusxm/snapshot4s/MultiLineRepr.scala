@@ -41,7 +41,7 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
         case x: Long      => out.append(s"${x.toString()}L")
         case x: Float     => out.append(x.toString())
         case x: Double    => out.append(x.toString())
-        case x: String    => printString(filterAnsi(x), out)
+        case x: String    => printString(x, out)
         case None         => out.append("None")
         case Nil          => out.append("Nil")
         case x: Map[?, ?] =>
@@ -162,24 +162,4 @@ private[snapshot4s] object MultiLineRepr extends MultiLineReprCompat {
       else sb.append(c)
   }
 
-  private def filterAnsi(s: String): String = {
-    if (s == null) {
-      null
-    } else {
-      val len = s.length
-      val r   = new java.lang.StringBuilder(len)
-      var i   = 0
-      while (i < len) {
-        val c = s.charAt(i)
-        if (c == '\u001B') {
-          i += 1
-          while (i < len && s.charAt(i) != 'm') i += 1
-        } else {
-          r.append(c)
-        }
-        i += 1
-      }
-      r.toString()
-    }
-  }
 }
