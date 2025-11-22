@@ -49,7 +49,7 @@ object generated {
   )
 }
  """
-      val snapshot4s = ((Test / sourceManaged).value / "Snapshot4sBuildInfo.scala")
+      val snapshot4s = (Test / sourceManaged).value / "Snapshot4sBuildInfo.scala"
       IO.write(snapshot4s, text)
       Seq(snapshot4s)
     },
