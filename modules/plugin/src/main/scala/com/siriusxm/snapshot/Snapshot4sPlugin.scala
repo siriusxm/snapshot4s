@@ -35,7 +35,7 @@ object Snapshot4sPlugin extends AutoPlugin {
 
   import autoImport.*
 
-  val tripleQuote = "\"\"\""
+  private val tripleQuote = "\"\"\""
 
   override def projectSettings: Seq[Setting[?]] = Seq(
     snapshot4sDirectory         := (Test / target).value / "snapshot",
