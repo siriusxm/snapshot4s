@@ -17,6 +17,7 @@
 package snapshot4s
 
 import cats.effect.IO
+import cats.effect.std.Env
 import weaver.*
 
 object LocationsSpec extends SimpleIOSuite {
@@ -33,27 +34,32 @@ object LocationsSpec extends SimpleIOSuite {
   }
 
   test("raises errors if the source directory is calculated incorrectly") {
-    val config = new SnapshotConfig(
-      resourceDirectory = Path("/path/to/resources"),
-      outputDirectory = Path("/path/to/output"),
-      sourceDirectory = Path("/wrong/path/to/sources")
-    )
-    val result =
-      IO(Locations.relativeSourceFilePath("/path/to/sources/TestFile.scala", config))
-    val message =
-      """Your project setup is not supported by snapshot4s. We encourage you to raise an issue at https://github.com/siriusxm/snapshot4s/issues/new?template=bug.md
+    def makePaths(root: String, sep: String): (SnapshotConfig, String, String) = {
+      val config = new SnapshotConfig(
+        resourceDirectory = Path(s"${root}${sep}path${sep}to${sep}resources"),
+        outputDirectory = Path(s"${root}${sep}path${sep}to${sep}output"),
+        sourceDirectory = Path(s"${root}${sep}wrong${sep}path${sep}to${sep}sources")
+      )
+      val relativeSourcePath = s"${root}${sep}path${sep}to${sep}sources${sep}TestFile.scala"
+      val message            =
+        s"""Your project setup is not supported by snapshot4s. We encourage you to raise an issue at https://github.com/siriusxm/snapshot4s/issues/new?template=bug.md
 
 We have detected the following configuration:
-  - sourceDirectory: /wrong/path/to/sources
-  - resourceDirectory: /path/to/resources
-  - outputDirectory: /path/to/output
+  - sourceDirectory: ${root}${sep}wrong${sep}path${sep}to${sep}sources
+  - resourceDirectory: ${root}${sep}path${sep}to${sep}resources
+  - outputDirectory: ${root}${sep}path${sep}to${sep}output
 """
-    result.attempt.map { result =>
-      matches(result) { case Left(err) =>
-        expect.eql(err.getMessage, message)
-      }
+      (config, relativeSourcePath, message)
     }
-
+    for {
+      isRunningOnWindows <- Env[IO]
+        .get("RUNNER_OS")
+        .map(_.exists(_.toLowerCase.contains("windows")))
+      (config, path, message) =
+        // Using java.io.File.separator results in linking errors in JS, so hard-code file separators instead.
+        if (isRunningOnWindows) makePaths("D:", "\\")
+        else makePaths("", "/")
+      result <- IO(Locations.relativeSourceFilePath(path, config)).attempt
+    } yield matches(result) { case Left(err) => expect.eql(message, err.getMessage) }
   }
-
 }

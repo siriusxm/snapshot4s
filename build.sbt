@@ -46,6 +46,7 @@ inThisBuild(
       tlGitHubDev("majk-p", "Michał Pawlik"),
       tlGitHubDev("zainab-ali", "Zainab Ali")
     ),
+    githubWorkflowOSes         := Seq("ubuntu-22.04", "windows-2025"),
     githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
     githubWorkflowPublishTargetBranches += RefPredicate.Equals(Ref.Branch("main")),
     ThisBuild / githubWorkflowBuild += WorkflowStep
