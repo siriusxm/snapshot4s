@@ -23,6 +23,7 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
   private val open: String  = "("
   private val close: String = ")"
   private val comma: String = ","
+  private val quote: Char   = '\"'
 
   private[snapshot4s] def repr[A]: Repr[A] = {
     case null    => "null"
@@ -70,17 +71,17 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
 
   private def printMultilineString(string: String): String = {
     val out = new StringBuilder()
-    out.append('\"').append('\"').append('\"')
+    out.append(quote).append(quote).append(quote)
     out.append(string)
-    out.append('\"').append('\"').append('\"')
+    out.append(quote).append(quote).append(quote)
     out.toString()
   }
 
   private def printSingleLineString(string: String): String = {
     val out = new StringBuilder()
-    out.append('\"')
+    out.append(quote)
     string.map(printChar).foreach(out.append)
-    out.append('\"')
+    out.append(quote)
     out.toString()
   }
 
