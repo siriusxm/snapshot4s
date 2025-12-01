@@ -118,13 +118,13 @@ object Repr extends ReprForAdt {
 
   // Creates Repr instance based on pprint
   @deprecated(
-    "This method is no longer recommended and will be removed in future releases. Use `default` instead.",
-    "0.3.0"
+    "This method is no longer recommended and will be removed in future releases. Use the derivation instead.",
+    "0.2.4"
   )
   def fromPprint[A]: Repr[A] = (a: A) =>
     // width and height are overridden to handle very large snapshots
     pprint.apply(a, width = 200, height = 99999999).plainText
 
-  def default[A]: Repr[A] = InlineRepr.repr[A]
+  private def default[A]: Repr[A] = InlineRepr.repr[A]
 
 }
