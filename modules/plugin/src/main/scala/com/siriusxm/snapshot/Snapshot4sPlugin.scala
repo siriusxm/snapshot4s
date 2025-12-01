@@ -119,8 +119,8 @@ object generated {
     val relativePath =
       IO.relativize(resourcePatchDir, patchFile).get
     // relative path starts with subpath like "src/test/scala/MyTest.scala" we need to remove that
-    val withoutSourceTestFileName = relativePath.split("\\.scala/").tail.mkString("/")
-    resourceDir / withoutSourceTestFileName
+    val withoutSourceTestFileName = relativePath.split("\\.scala").tail
+    withoutSourceTestFileName.foldRight(resourceDir) { (component, path) => path / component }
   }
 
   private def applyInlinePatches(
