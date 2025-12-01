@@ -27,12 +27,17 @@ jobs:
     name: Test
     strategy:
       matrix:
-        os: [ubuntu-22.04]
+        os: [ubuntu-22.04, windows-2025]
         scala: [3]
         java: [temurin@17]
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     steps:
+      - name: Ignore line ending differences in git
+        if: contains(runner.os, 'windows')
+        shell: bash
+        run: git config --global core.autocrlf false
+
       - name: Checkout current branch (full)
         uses: actions/checkout@v5
         with:
@@ -52,44 +57,54 @@ jobs:
 
       - name: sbt update
         if: matrix.java == 'temurin@17' && steps.setup-java-temurin-17.outputs.cache-hit == 'false'
+        shell: bash
         run: sbt +update
 
       - name: Check that workflows are up to date
+        shell: bash
         run: sbt githubWorkflowCheck
 
       - name: Check headers and formatting
         if: matrix.java == 'temurin@17' && matrix.os == 'ubuntu-22.04'
+        shell: bash
         run: sbt '++ ${{ matrix.scala }}' headerCheckAll scalafmtCheckAll 'project /' scalafmtSbtCheck
 
       - name: Check scalafix lints
         if: matrix.java == 'temurin@17' && matrix.os == 'ubuntu-22.04'
+        shell: bash
         run: sbt '++ ${{ matrix.scala }}' 'scalafixAll --check'
 
       - name: Test
+        shell: bash
         run: sbt '++ ${{ matrix.scala }}' test
 
       - name: Check binary compatibility
         if: matrix.java == 'temurin@17' && matrix.os == 'ubuntu-22.04'
+        shell: bash
         run: sbt '++ ${{ matrix.scala }}' mimaReportBinaryIssues
 
       - name: Generate API documentation
         if: matrix.java == 'temurin@17' && matrix.os == 'ubuntu-22.04'
+        shell: bash
         run: sbt '++ ${{ matrix.scala }}' doc
 
       - name: Scripted tests
+        shell: bash
         run: sbt scripted
 
       - name: Make target directories
         if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
+        shell: bash
         run: mkdir -p modules/plugin/target modules/weaver/target/jvm-2.13 modules/hashing/target/jvm-3 modules/munit/target/jvm-2.12 modules/scalatest/target/jvm-2.13 modules/weaver/target/js-3 modules/munit/target/js-2.12 modules/scalatest/target/js-2.12 modules/core/target/jvm-2.12 modules/hashing/target/js-3 modules/hashing/target/jvm-2.12 modules/core/target/jvm-3 modules/munit/target/jvm-3 modules/weaver/target/js-2.13 modules/hashing/target/js-2.13 modules/core/target/js-2.13 modules/hashing/target/jvm-2.13 modules/scalatest/target/jvm-3 modules/core/target/js-2.12 modules/weaver/target/jvm-3 modules/scalatest/target/jvm-2.12 modules/munit/target/js-3 modules/weaver/target/js-2.12 modules/weaver/target/jvm-2.12 modules/munit/target/jvm-2.13 modules/munit/target/js-2.13 modules/core/target/jvm-2.13 modules/hashing/target/js-2.12 modules/scalatest/target/js-3 modules/scalatest/target/js-2.13 modules/core/target/js-3 project/target
 
       - name: Compress target directories
         if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
+        shell: bash
         run: tar cf targets.tar modules/plugin/target modules/weaver/target/jvm-2.13 modules/hashing/target/jvm-3 modules/munit/target/jvm-2.12 modules/scalatest/target/jvm-2.13 modules/weaver/target/js-3 modules/munit/target/js-2.12 modules/scalatest/target/js-2.12 modules/core/target/jvm-2.12 modules/hashing/target/js-3 modules/hashing/target/jvm-2.12 modules/core/target/jvm-3 modules/munit/target/jvm-3 modules/weaver/target/js-2.13 modules/hashing/target/js-2.13 modules/core/target/js-2.13 modules/hashing/target/jvm-2.13 modules/scalatest/target/jvm-3 modules/core/target/js-2.12 modules/weaver/target/jvm-3 modules/scalatest/target/jvm-2.12 modules/munit/target/js-3 modules/weaver/target/js-2.12 modules/weaver/target/jvm-2.12 modules/munit/target/jvm-2.13 modules/munit/target/js-2.13 modules/core/target/jvm-2.13 modules/hashing/target/js-2.12 modules/scalatest/target/js-3 modules/scalatest/target/js-2.13 modules/core/target/js-3 project/target
 
       - name: Upload target directories
         if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: target-${{ matrix.os }}-${{ matrix.java }}-${{ matrix.scala }}
           path: targets.tar
@@ -104,6 +119,10 @@ jobs:
         java: [temurin@17]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Ignore line ending differences in git
+        if: contains(runner.os, 'windows')
+        run: git config --global core.autocrlf false
+
       - name: Checkout current branch (full)
         uses: actions/checkout@v5
         with:
@@ -126,7 +145,7 @@ jobs:
         run: sbt +update
 
       - name: Download target directories (3)
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: target-${{ matrix.os }}-${{ matrix.java }}-3
 
@@ -168,6 +187,10 @@ jobs:
         java: [temurin@17]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Ignore line ending differences in git
+        if: contains(runner.os, 'windows')
+        run: git config --global core.autocrlf false
+
       - name: Checkout current branch (full)
         uses: actions/checkout@v5
         with:
