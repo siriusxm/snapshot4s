@@ -63,13 +63,12 @@ object Repr extends ReprForAdt {
   implicit def reprForVector[A](implicit @unused ev: Repr[A]): Repr[Vector[A]] =
     reprForCollection[A, Vector]
 
-  implicit def reprForOption[A](implicit @unused ev: Repr[A]): Repr[Option[A]] =
+  implicit def reprForOption[A](implicit reprA: Repr[A]): Repr[Option[A]] =
     new Repr[Option[A]] {
-      def toSourceString(x: Option[A]): String =
-        x match {
-          case None    => "None"
-          case Some(_) => iteratorToSourceString(x.iterator, "Some")
-        }
+      def toSourceString(optA: Option[A]): String = optA match {
+        case None    => "None"
+        case Some(a) => s"Some(${reprA.toSourceString(a)})"
+      }
     }
 
   implicit def reprForMap[K, V](implicit @unused evK: Repr[K], evV: Repr[V]): Repr[Map[K, V]] =
