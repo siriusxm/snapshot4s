@@ -20,7 +20,7 @@ import scala.annotation.implicitNotFound
 
 import org.typelevel.scalaccompat.annotation.unused
 
-import snapshot4s.internals.MultiLineRepr
+import snapshot4s.internals.InlineRepr
 
 /** Repr provides a code representation for given type.
   * It serves the purpose of serializing data structure
@@ -99,14 +99,14 @@ object Repr extends ReprForAdt {
   private def reprForCollection[A, Collection[A] <: Iterable[A]](implicit ev: Repr[A]) =
     new Repr[Collection[A]] {
       def toSourceString(x: Collection[A]): String =
-        iteratorToSourceString(x.iterator, MultiLineRepr.collectionClassName(x))
+        iteratorToSourceString(x.iterator, InlineRepr.collectionClassName(x))
     }
 
   private def iteratorToSourceString[A](x: Iterator[A], className: String)(implicit
       ev: Repr[A]
   ): String = {
     val out = new StringBuilder()
-    MultiLineRepr.printApply[A](
+    InlineRepr.printApply[A](
       className,
       x,
       out
@@ -119,7 +119,7 @@ object Repr extends ReprForAdt {
       evV: Repr[V]
   ): String = {
     val out = new StringBuilder()
-    MultiLineRepr.printApply[(K, V)](
+    InlineRepr.printApply[(K, V)](
       "Map",
       x.toList.iterator,
       out
@@ -138,6 +138,6 @@ object Repr extends ReprForAdt {
     // width and height are overridden to handle very large snapshots
     pprint.apply(a, width = 200, height = 99999999).plainText
 
-  def default[A]: Repr[A] = MultiLineRepr.repr[A]
+  def default[A]: Repr[A] = InlineRepr.repr[A]
 
 }
