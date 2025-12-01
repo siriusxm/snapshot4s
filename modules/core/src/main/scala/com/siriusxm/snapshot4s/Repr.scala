@@ -18,8 +18,6 @@ package snapshot4s
 
 import scala.annotation.implicitNotFound
 
-import org.typelevel.scalaccompat.annotation.unused
-
 import snapshot4s.internals.InlineRepr
 
 /** Repr provides a code representation for given type.
@@ -49,18 +47,18 @@ object Repr extends ReprForAdt {
   implicit val reprForFloat: Repr[Float]     = default
   implicit val reprForDouble: Repr[Double]   = default
 
-  implicit def reprForIterable[A](implicit @unused ev: Repr[A]): Repr[Iterable[A]] =
+  implicit def reprForIterable[A](implicit ev: Repr[A]): Repr[Iterable[A]] =
     reprForCollection[A, Iterable]
-  implicit def reprForSeq[A](implicit @unused ev: Repr[A]): Repr[Seq[A]] =
+  implicit def reprForSeq[A](implicit ev: Repr[A]): Repr[Seq[A]] =
     reprForCollection[A, Seq]("Seq")
-  implicit def reprForList[A](implicit @unused ev: Repr[A]): Repr[List[A]] =
+  implicit def reprForList[A](implicit ev: Repr[A]): Repr[List[A]] =
     reprForCollection[A, List]
 
-  implicit def reprForArray[A](implicit @unused ev: Repr[A]): Repr[Array[A]] = new Repr[Array[A]] {
+  implicit def reprForArray[A](implicit ev: Repr[A]): Repr[Array[A]] = new Repr[Array[A]] {
     def toSourceString(x: Array[A]): String = iteratorToSourceString(x.iterator, "Array")
   }
 
-  implicit def reprForVector[A](implicit @unused ev: Repr[A]): Repr[Vector[A]] =
+  implicit def reprForVector[A](implicit ev: Repr[A]): Repr[Vector[A]] =
     reprForCollection[A, Vector]
 
   implicit def reprForOption[A](implicit reprA: Repr[A]): Repr[Option[A]] =
@@ -71,19 +69,19 @@ object Repr extends ReprForAdt {
       }
     }
 
-  implicit def reprForMap[K, V](implicit @unused evK: Repr[K], evV: Repr[V]): Repr[Map[K, V]] =
+  implicit def reprForMap[K, V](implicit evK: Repr[K], evV: Repr[V]): Repr[Map[K, V]] =
     new Repr[Map[K, V]] {
       def toSourceString(x: Map[K, V]): String = mapToSourceString(x)
     }
 
   implicit def reprForEither[L, R](implicit
-      @unused evL: Repr[L],
-      @unused evR: Repr[R]
+      evL: Repr[L],
+      evR: Repr[R]
   ): Repr[Either[L, R]] = new Repr[Either[L, R]] {
     def toSourceString(x: Either[L, R]): String =
       x match {
-        case Left(err)    => iteratorToSourceString(Iterator(err), "Left")
-        case Right(value) => iteratorToSourceString(Iterator(value), "Right")
+        case Left(err)    => s"Left(${evL.toSourceString(err)})"
+        case Right(value) => s"Right(${evR.toSourceString(value)})"
       }
   }
 
