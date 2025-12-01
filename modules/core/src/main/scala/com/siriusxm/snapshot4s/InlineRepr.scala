@@ -42,21 +42,22 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
 
   private[snapshot4s] def printApply[T](
       prefix: String,
-      it: Iterator[T],
-      out: StringBuilder
-  )(fn: T => Unit): Unit = {
+      it: Iterator[T]
+  )(fn: T => String): String = {
+    val out = new StringBuilder()
     out.append(prefix)
     out.append(open)
     if (it.hasNext) {
       while (it.hasNext) {
         val value = it.next()
-        fn(value)
+        out.append(fn(value))
         if (it.hasNext) {
           out.append(comma)
         }
       }
     }
     out.append(close)
+    out.toString()
   }
 
   private def printString(
@@ -67,11 +68,21 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
     else printSingleLineString(string)
   }
 
-  private def printMultilineString(string: String): String =
-    s"\"\"\"$string\"\"\""
+  private def printMultilineString(string: String): String = {
+    val out = new StringBuilder()
+    out.append('\"').append('\"').append('\"')
+    out.append(string)
+    out.append('\"').append('\"').append('\"')
+    out.toString()
+  }
 
-  private def printSingleLineString(string: String): String =
-    s"\"${string.map(printChar).mkString}\""
+  private def printSingleLineString(string: String): String = {
+    val out = new StringBuilder()
+    out.append('\"')
+    string.map(printChar).foreach(out.append)
+    out.append('\"')
+    out.toString()
+  }
 
   private def printChar(
       c: Char

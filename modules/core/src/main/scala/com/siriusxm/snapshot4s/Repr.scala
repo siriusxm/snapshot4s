@@ -104,30 +104,20 @@ object Repr extends ReprForAdt {
 
   private def iteratorToSourceString[A](x: Iterator[A], className: String)(implicit
       ev: Repr[A]
-  ): String = {
-    val out = new StringBuilder()
+  ): String =
     InlineRepr.printApply[A](
       className,
-      x,
-      out
-    )(value => out.append(ev.toSourceString(value)))
-    out.toString
-  }
+      x
+    )(value => ev.toSourceString(value))
 
   private def mapToSourceString[K, V](x: Map[K, V])(implicit
       evK: Repr[K],
       evV: Repr[V]
-  ): String = {
-    val out = new StringBuilder()
+  ): String =
     InlineRepr.printApply[(K, V)](
       "Map",
-      x.toList.iterator,
-      out
-    )(kv =>
-      out.append(evK.toSourceString(kv._1)).append(" -> ").append(evV.toSourceString(kv._2)): Unit
-    )
-    out.toString
-  }
+      x.toList.iterator
+    )(kv => evK.toSourceString(kv._1) + " -> " + evV.toSourceString(kv._2))
 
   // Creates Repr instance based on pprint
   @deprecated(
