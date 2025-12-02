@@ -28,7 +28,8 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
   private[snapshot4s] def repr[A]: Repr[A] = {
     case null    => "null"
     case x: Char =>
-      s"\'${(if (x == '\'') "\\'" else printChar(x))}\'"
+      val body = if (x == '\'') "\\'" else printChar(x)
+      s"\'${(body)}\'"
     case x: Byte   => x.toString()
     case x: Short  => x.toString()
     case x: Int    => x.toString()
@@ -60,7 +61,7 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
   private def printMultilineString(string: String): String = {
     val out = new StringBuilder()
     out.append(quote).append(quote).append(quote)
-    out.append(string)
+    string.map(escapeQuote).foreach(out.append)
     out.append(quote).append(quote).append(quote)
     out.toString()
   }
@@ -90,5 +91,11 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
         "\\u%04x".format(c.toInt)
       else c.toString
   }
+
+  private def escapeQuote(c: Char): String =
+    c match {
+      case '"' => "\\\""
+      case c   => c.toString
+    }
 
 }
