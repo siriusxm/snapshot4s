@@ -19,7 +19,7 @@ package snapshot4s
 import munit.internal.MacroCompat
 import weaver.*
 
-object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro {
+object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTestCases {
 
   case class MyCaseClass(a: String, b: Long)
 

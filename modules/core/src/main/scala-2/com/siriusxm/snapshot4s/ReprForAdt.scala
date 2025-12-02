@@ -20,39 +20,117 @@ import scala.reflect.macros.blackbox
 
 trait ReprForAdt {
 
-  // Mirror is only used to guarantee we are working with sum/product
-  // in such case it's safe to rely on pprint instead of having a separate Repr implementation
-  implicit def productRepr[A <: Product]: Repr[A] = v =>
-    // width and height are overridden to handle very large snapshots
-    pprint.apply(v, width = 200, height = 99999999).plainText
-  implicit def sumRepr[A]: Repr[A] = macro ReprForSum.impl[A]
+  implicit def derived[A]: Repr[A] = macro ReprForAdtMacros.deriveRepr[A]
 
 }
 
-private[snapshot4s] object ReprForSum {
+private[snapshot4s] object ReprForAdtMacros {
 
-  def impl[A: c.WeakTypeTag](c: blackbox.Context): c.Expr[Repr[A]] = {
-    import c.universe.*
+  def deriveRepr[A: c.WeakTypeTag](c: blackbox.Context): c.Expr[Repr[A]] = {
+    import c.universe._
 
-    val weakTypeOfA = weakTypeOf[A]
-    val isSealed    = weakTypeOfA.typeSymbol.isClass && weakTypeOfA.typeSymbol.asClass.isSealed
+    val tpe    = weakTypeOf[A]
+    val symbol = tpe.typeSymbol
 
-    if (!isSealed) {
+    if (!symbol.isClass) {
       c.abort(
         c.enclosingPosition,
-        s"Failed to generate Repr for sum because $weakTypeOfA is not a sealed trait."
+        s"""Cannot derive Repr instance. The type $tpe is not a class.
+
+See the guide for a list of supported types:
+https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
       )
-    } else {
-      val subtypes = weakTypeOfA.typeSymbol.asClass.knownDirectSubclasses
-      if (subtypes.size > 0) {
-        reify { Repr.fromPprint[A] }
-      } else {
-        c.abort(
-          c.enclosingPosition,
-          s"Failed to generate Repr for sum because sealed trait $weakTypeOfA has no subtypes."
-        )
-      }
     }
 
+    val classSymbol = symbol.asClass
+
+    if (classSymbol.isSealed) {
+      deriveSumRepr[A](c)
+    } else if (classSymbol.isCaseClass) {
+      deriveProductRepr[A](c)
+    } else {
+      c.abort(
+        c.enclosingPosition,
+        s"""Cannot derive Repr instance. The type $tpe is neither a Sum nor Product type.
+
+See the guide for a list of supported types:
+https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
+      )
+    }
+  }
+
+  private def deriveProductRepr[A: c.WeakTypeTag](c: blackbox.Context): c.Expr[Repr[A]] = {
+    import c.universe._
+
+    val tpe         = weakTypeOf[A]
+    val typeName    = tpe.typeSymbol.name.decodedName.toString
+    val classSymbol = tpe.typeSymbol.asClass
+
+    val constructor = classSymbol.primaryConstructor.asMethod
+    val paramLists  = constructor.paramLists
+
+    if (paramLists.isEmpty || paramLists.head.isEmpty) {
+      c.Expr[Repr[A]](q"""
+        new _root_.snapshot4s.Repr[$tpe] {
+          def toSourceString(a: $tpe): String = ${typeName}
+        }
+      """)
+    } else {
+      val params                 = paramLists.head
+      val labelsAndReprInstances = params.map { param =>
+        val label     = param.name.decodedName.toString
+        val paramType = param.typeSignature.finalResultType
+        val repr      = q"implicitly[_root_.snapshot4s.Repr[$paramType]].asInstanceOf[Repr[Any]]"
+        q"($label, $repr)"
+      }
+      c.Expr[Repr[A]](q"""
+        new _root_.snapshot4s.Repr[$tpe] {
+          def toSourceString(a: $tpe): String = {
+            val product = a.asInstanceOf[Product]
+            val elements = product.productIterator.toList
+            val labelsAndReprInstances = List(..$labelsAndReprInstances)
+              val namedArgs = elements.zip(labelsAndReprInstances).map { case (elem, (label, repr)) =>
+                label + " = " + repr.toSourceString(elem)
+              }
+              $typeName + "(" + namedArgs.mkString(", ") + ")"
+        }
+      }
+      """)
+    }
+  }
+
+  private def deriveSumRepr[A: c.WeakTypeTag](c: blackbox.Context): c.Expr[Repr[A]] = {
+    import c.universe._
+
+    val tpe         = weakTypeOf[A]
+    val classSymbol = tpe.typeSymbol.asClass
+
+    if (!classSymbol.isSealed) {
+      c.abort(c.enclosingPosition, s"Cannot derive sum type Repr for $tpe because it is not sealed")
+    }
+
+    val knownSubclasses = classSymbol.knownDirectSubclasses.toList
+    if (knownSubclasses.isEmpty) {
+      c.abort(
+        c.enclosingPosition,
+        s"Cannot derive sum type Repr for sealed trait $tpe because it has no subclasses"
+      )
+    }
+
+    // Create cases for each subclass
+    val cases = knownSubclasses.map { subclass =>
+      val subType = subclass.asType.toType
+      cq"""_: $subType => implicitly[_root_.snapshot4s.Repr[$subType]].toSourceString(a.asInstanceOf[$subType])"""
+    }
+
+    c.Expr[Repr[A]](q"""
+      new _root_.snapshot4s.Repr[$tpe] {
+        def toSourceString(a: $tpe): String = {
+          a match {
+            case ..$cases
+          }
+        }
+      }
+    """)
   }
 }
