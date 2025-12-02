@@ -78,8 +78,8 @@ object Repr extends ReprForAdt {
       evL: Repr[L],
       evR: Repr[R]
   ): Repr[Either[L, R]] = new Repr[Either[L, R]] {
-    def toSourceString(x: Either[L, R]): String =
-      x match {
+    def toSourceString(either: Either[L, R]): String =
+      either match {
         case Left(err)    => s"Left(${evL.toSourceString(err)})"
         case Right(value) => s"Right(${evR.toSourceString(value)})"
       }
@@ -99,21 +99,21 @@ object Repr extends ReprForAdt {
         iteratorToSourceString(x.iterator, InlineRepr.collectionClassName(x))
     }
 
-  private def iteratorToSourceString[A](x: Iterator[A], className: String)(implicit
+  private def iteratorToSourceString[A](iterator: Iterator[A], className: String)(implicit
       ev: Repr[A]
   ): String =
     InlineRepr.printApply[A](
       className,
-      x
+      iterator
     )(value => ev.toSourceString(value))
 
-  private def mapToSourceString[K, V](x: Map[K, V])(implicit
+  private def mapToSourceString[K, V](map: Map[K, V])(implicit
       evK: Repr[K],
       evV: Repr[V]
   ): String =
     InlineRepr.printApply[(K, V)](
       "Map",
-      x.toList.iterator
+      map.toList.iterator
     )(kv => evK.toSourceString(kv._1) + " -> " + evV.toSourceString(kv._2))
 
   // Creates Repr instance based on pprint

@@ -45,20 +45,8 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
       prefix: String,
       it: Iterator[T]
   )(fn: T => String): String = {
-    val out = new StringBuilder()
-    out.append(prefix)
-    out.append(open)
-    if (it.hasNext) {
-      while (it.hasNext) {
-        val value = it.next()
-        out.append(fn(value))
-        if (it.hasNext) {
-          out.append(comma)
-        }
-      }
-    }
-    out.append(close)
-    out.toString()
+    val body = it.map(fn).mkString(comma)
+    s"$prefix$open$body$close"
   }
 
   private def printString(
