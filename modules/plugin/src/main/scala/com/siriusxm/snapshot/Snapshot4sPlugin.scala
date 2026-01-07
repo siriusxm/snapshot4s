@@ -104,7 +104,7 @@ object generated {
   private def applyResourcePatches(
       log: Logger
   )(resourcePatchDir: File, resourceDir: File, filter: NameFilter) = {
-    val patches         = (resourcePatchDir ** (-DirectoryFilter)).get
+    val patches         = (resourcePatchDir ** (-DirectoryFilter)).get()
     val filteredPatches = patches.filter(file => filter.accept(file.getParent))
     filteredPatches.foreach { patchFile =>
       val patchContents = IO.read(patchFile)
@@ -126,8 +126,10 @@ object generated {
   private def applyInlinePatches(
       log: Logger
   )(inlinePatchDir: File, sourceDir: File, filter: NameFilter) = {
-    val patchDirectories = (inlinePatchDir ** (-DirectoryFilter)).get
-    val dirsByParent     = patchDirectories.groupBy(_.getParent).filterKeys(filter.accept)
+    val patchDirectories = (inlinePatchDir ** (-DirectoryFilter)).get()
+    val dirsByParent     = patchDirectories.groupBy(_.getParent).filter { case (k, _) =>
+      filter.accept(k)
+    }
     dirsByParent.foreach { case (parentDir, changeFiles) =>
       val relativeSourceFile = IO.relativize(inlinePatchDir, new File(parentDir)).get
       val sourceFile         = sourceDir / relativeSourceFile
