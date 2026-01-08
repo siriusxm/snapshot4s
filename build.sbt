@@ -193,6 +193,22 @@ lazy val plugin = (projectMatrix in (file("modules/plugin")))
   )
   .jvmPlatform(scalaVersions = Seq(sbt1PluginScalaVersion, sbt2PluginScalaVersion))
 
+// These scripted tests depend on plugins that do not yet support SBT 2 (scalajs and sbt-typelevel)
+// Once their dependencies support SBT 2, these tests can be incorporated into the plugin module.
+lazy val pluginTests = (project in (file("modules/plugin-sbt1-tests")))
+  .enablePlugins(ScriptedPlugin)
+  .dependsOn(hashing.jvm(sbt1PluginScalaVersion))
+  .settings(
+    name         := "plugin-sbt1-tests",
+    scalaVersion := sbt1PluginScalaVersion,
+    pluginSettings,
+    mimaPreviousArtifacts := Set.empty,
+    scriptedDependencies  := {
+      scriptedDependencies.value
+      publishLocal.all(scriptedScopeFilter).value
+    }
+  )
+
 def latestStableVersion = {
   import scala.sys.process._
   "git -c versionsort.suffix=- tag --list --sort=-version:refname".!!.split("\n").toList
