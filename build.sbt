@@ -22,15 +22,19 @@ lazy val buildInfoSettings: Seq[Setting[?]] = {
   )
 }
 
-lazy val scala3Version         = "3.3.7"
-lazy val scala213Version       = "2.13.18"
-lazy val sbtPluginScalaVersion = "2.12.21"
+lazy val scala3Version          = "3.3.7"
+lazy val scala213Version        = "2.13.18"
+lazy val sbt1PluginScalaVersion = "2.12.21"
+lazy val sbt2PluginScalaVersion = "3.7.4"
 
 lazy val scalaVersions = Seq(
   scala3Version,
   scala213Version,
-  sbtPluginScalaVersion
+  sbt1PluginScalaVersion
 )
+
+lazy val sbt1Version = "1.11.7"
+lazy val sbt2Version = "2.0.0-RC8"
 
 def scalaReflect(scalaVersion: String): List[ModuleID] =
   if (scalaVersion.startsWith("3.")) Nil
@@ -60,7 +64,7 @@ inThisBuild(
     tlJdkRelease           := Some(8),
     organizationName       := "SiriusXM",
     startYear              := Some(2024),
-    licenses += ("Apache-2.0", new URL("https://www.apache.org/licenses/LICENSE-2.0.txt"))
+    licenses += License.Apache2
   )
 )
 
@@ -69,7 +73,8 @@ lazy val root = (project in file("."))
   .enablePlugins(NoPublishPlugin)
 
 lazy val allModules: Seq[ProjectReference] = Seq(
-  Seq[ProjectReference](docs, plugin),
+  Seq[ProjectReference](docs),
+  plugin.projectRefs,
   hashing.projectRefs,
   core.projectRefs,
   weaver.projectRefs,
@@ -78,13 +83,18 @@ lazy val allModules: Seq[ProjectReference] = Seq(
 ).flatten
 
 lazy val pluginSettings = Seq(
-  scalaVersion                     := sbtPluginScalaVersion,
   sbtPluginPublishLegacyMavenStyle := false,
   scriptedLaunchOpts               := {
     scriptedLaunchOpts.value ++
       Seq("-Xmx1024M", "-Dplugin.version=" + version.value)
   },
-  scriptedBufferLog := false
+  scriptedBufferLog             := false,
+  pluginCrossBuild / sbtVersion := {
+    scalaBinaryVersion.value match {
+      case "2.12" => sbt1Version
+      case _      => sbt2Version
+    }
+  }
 )
 
 lazy val hashing = (projectMatrix in file("modules/hashing"))
@@ -167,15 +177,31 @@ lazy val scriptedScopeFilter = ScopeFilter(
   )
 )
 
-lazy val plugin = project
-  .in(file("modules/plugin"))
+lazy val plugin = (projectMatrix in (file("modules/plugin")))
   .enablePlugins(SbtPlugin, BuildInfoPlugin)
-  .dependsOn(hashing.jvm(sbtPluginScalaVersion))
+  .dependsOn(hashing)
   .settings(
     name := "sbt-snapshot4s",
     buildInfoSettings,
     pluginSettings,
     testFrameworks += new TestFramework("weaver.framework.CatsEffect"),
+    mimaPreviousArtifacts := Set.empty,
+    scriptedDependencies  := {
+      scriptedDependencies.value
+      publishLocal.all(scriptedScopeFilter).value
+    }
+  )
+  .jvmPlatform(scalaVersions = Seq(sbt1PluginScalaVersion, sbt2PluginScalaVersion))
+
+// These scripted tests depend on plugins that do not yet support SBT 2 (scalajs and sbt-typelevel)
+// Once their dependencies support SBT 2, these tests can be incorporated into the plugin module.
+lazy val pluginTests = (project in (file("modules/plugin-sbt1-tests")))
+  .enablePlugins(ScriptedPlugin)
+  .dependsOn(hashing.jvm(sbt1PluginScalaVersion))
+  .settings(
+    name         := "plugin-sbt1-tests",
+    scalaVersion := sbt1PluginScalaVersion,
+    pluginSettings,
     mimaPreviousArtifacts := Set.empty,
     scriptedDependencies  := {
       scriptedDependencies.value
