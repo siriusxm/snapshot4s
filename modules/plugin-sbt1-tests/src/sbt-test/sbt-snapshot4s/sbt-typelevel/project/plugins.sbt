@@ -1,5 +1,5 @@
 addSbtPlugin("org.typelevel" % "sbt-typelevel" % "0.7.2")
-addSbtPlugin("org.scala-js"  % "sbt-scalajs"   % "1.20.1")
+addSbtPlugin("org.scala-js"  % "sbt-scalajs"   % "1.20.2")
 
 sys.props.get("plugin.version") match {
   case Some(x) =>
