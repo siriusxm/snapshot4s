@@ -37,8 +37,8 @@ private[snapshot4s] object ReprForAdtMacros {
         c.enclosingPosition,
         s"""Cannot derive Repr instance. The type $tpe is not a class.
 
-See the guide for a list of supported types:
-https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
+ See the guide for a list of supported types:
+ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
       )
     }
 
@@ -53,8 +53,8 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
         c.enclosingPosition,
         s"""Cannot derive Repr instance. The type $tpe is neither a Sum nor Product type.
 
-See the guide for a list of supported types:
-https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
+ See the guide for a list of supported types:
+ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
       )
     }
   }
@@ -117,51 +117,13 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
       )
     }
 
-    // Create cases for each subclass with proper handling of generic types
     val cases = knownSubclasses.map { subclass =>
-      val subType = subclass.asType.toType
-      
-      // If the sealed trait is generic, we need to properly substitute type parameters
-      val concreteSubType = if (tpe.typeArgs.nonEmpty) {
-        val subTypeSymbol = subType.typeSymbol.asType
-        val subTypeParams = subTypeSymbol.typeParams
-        
-        if (subTypeParams.nonEmpty) {
-          // Find how the subclass extends the parent to understand the type parameter mapping
-          val baseType = subType.baseType(classSymbol)
-          
-          if (baseType != NoType && baseType.typeArgs.nonEmpty) {
-            // Create a type argument list for the subclass by mapping parent's concrete types
-            // through the subclass's relationship to the parent
-            val concreteTypeArgs = subTypeParams.map { subTypeParam =>
-              // Find where this type param appears in the base type
-              val paramSymbol = subTypeParam.asType.toType.typeSymbol
-              val idx = baseType.typeArgs.indexWhere(arg => arg.typeSymbol == paramSymbol)
-              if (idx >= 0 && idx < tpe.typeArgs.length) {
-                tpe.typeArgs(idx)
-              } else {
-                // If we can't find it, keep the type param as-is (shouldn't happen)
-                subTypeParam.asType.toType
-              }
-            }
-            
-            // Apply the concrete type arguments to the subclass type constructor
-            if (concreteTypeArgs.exists(_.typeSymbol.isParameter)) {
-              // Still has type parameters, fallback to subType
-              subType
-            } else {
-              appliedType(subTypeSymbol, concreteTypeArgs)
-            }
-          } else {
-            subType
-          }
-        } else {
-          subType
-        }
-      } else {
-        subType
-      }
-      
+      val subType         = subclass.asType.toType
+      val concreteSubType =
+        if (shouldSubstituteGenericsInSubtype(c)(tpe, classSymbol, subType))
+          substituteTypeParameters(c)(tpe, classSymbol, subType).getOrElse(subType)
+        else subType
+
       cq"""_: $concreteSubType => implicitly[_root_.snapshot4s.Repr[$concreteSubType]].toSourceString(a.asInstanceOf[$concreteSubType])"""
     }
 
@@ -174,5 +136,57 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
         }
       }
     """)
+  }
+
+  // For types like MyEither[String, Int] the subtype is MyLeft[A, B], and in the pattern match we need MyLeft[String, Int]
+  // This function tells if substitution is necessary
+  private def shouldSubstituteGenericsInSubtype(c: blackbox.Context)(
+      parentType: c.Type,
+      parentSymbol: c.universe.ClassSymbol,
+      subType: c.Type
+  ): Boolean = {
+    import c.universe._
+
+    val parentIsGeneric   = parentType.typeArgs.nonEmpty
+    val subTypeSymbol     = subType.typeSymbol.asType
+    val subclassIsGeneric = subTypeSymbol.typeParams.nonEmpty
+    val baseType          = subType.baseType(parentSymbol)
+    val baseTypeNotFound  = baseType == NoType
+    parentIsGeneric && subclassIsGeneric && !baseTypeNotFound
+  }
+
+  private def substituteTypeParameters(c: blackbox.Context)(
+      parentType: c.Type,
+      parentSymbol: c.universe.ClassSymbol,
+      subType: c.Type
+  ): Option[c.Type] = {
+    import c.universe._
+
+    val subTypeSymbol = subType.typeSymbol.asType
+    val subTypeParams = subTypeSymbol.typeParams
+    val baseType      = subType.baseType(parentSymbol)
+
+    // We want to go from Parent: MyEither[String, Int] to MyEither[A, B] to MyLeft[A, B] to MyLeft[String, Int]
+    val concreteTypeArgs = subTypeParams.map { subTypeParam =>
+      findConcreteTypeForParameter(c)(subTypeParam, baseType, parentType)
+    }
+    val hasUnresolvedTypeParameters = concreteTypeArgs.exists(_.typeSymbol.isParameter)
+
+    if (!hasUnresolvedTypeParameters) Some(appliedType(subTypeSymbol, concreteTypeArgs))
+    else None
+  }
+
+  private def findConcreteTypeForParameter(c: blackbox.Context)(
+      subTypeParam: c.universe.Symbol,
+      baseType: c.Type,
+      parentType: c.Type
+  ): c.Type = {
+    val paramSymbol    = subTypeParam.asType.toType.typeSymbol
+    val idx            = baseType.typeArgs.indexWhere(arg => arg.typeSymbol == paramSymbol)
+    val parameterFound = idx >= 0
+    val indexIsValid   = idx < parentType.typeArgs.length
+    if (parameterFound && indexIsValid) parentType.typeArgs(idx)
+    // If we can't find a mapping, keep the type parameter as-is
+    else subTypeParam.asType.toType
   }
 }
