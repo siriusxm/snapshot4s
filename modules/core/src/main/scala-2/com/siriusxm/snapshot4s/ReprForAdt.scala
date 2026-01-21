@@ -37,8 +37,8 @@ private[snapshot4s] object ReprForAdtMacros {
         c.enclosingPosition,
         s"""Cannot derive Repr instance. The type $tpe is not a class.
 
- See the guide for a list of supported types:
- https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
+See the guide for a list of supported types:
+https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
       )
     }
 
@@ -53,8 +53,8 @@ private[snapshot4s] object ReprForAdtMacros {
         c.enclosingPosition,
         s"""Cannot derive Repr instance. The type $tpe is neither a Sum nor Product type.
 
- See the guide for a list of supported types:
- https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
+See the guide for a list of supported types:
+https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
       )
     }
   }
