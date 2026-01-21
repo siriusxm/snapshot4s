@@ -65,4 +65,15 @@ object ReprSpec extends FunSuite with MacroCompat.CompileErrorMacro with ReprTes
     expect(!errors.isEmpty())
   }
 
+  // This test should be passing
+  test("reproduce bug in derivation") {
+    sealed trait MyEither[A, B]
+    case class MyLeft[A, B](a: A)  extends MyEither[A, B]
+    case class MyRight[A, B](b: B) extends MyEither[A, B]
+    val errors = compileErrors("""
+    implicitly[Repr[MyEither[MyCaseClass, String]]]
+    """)
+    expect(clue(errors).isEmpty())
+  }
+
 }

@@ -79,7 +79,7 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
       val params                 = paramLists.head
       val labelsAndReprInstances = params.map { param =>
         val label     = param.name.decodedName.toString
-        val paramType = param.typeSignature.finalResultType
+        val paramType = param.typeSignature.finalResultType.asSeenFrom(tpe, classSymbol)
         val repr      = q"implicitly[_root_.snapshot4s.Repr[$paramType]].asInstanceOf[Repr[Any]]"
         q"($label, $repr)"
       }
@@ -117,10 +117,52 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
       )
     }
 
-    // Create cases for each subclass
+    // Create cases for each subclass with proper handling of generic types
     val cases = knownSubclasses.map { subclass =>
       val subType = subclass.asType.toType
-      cq"""_: $subType => implicitly[_root_.snapshot4s.Repr[$subType]].toSourceString(a.asInstanceOf[$subType])"""
+      
+      // If the sealed trait is generic, we need to properly substitute type parameters
+      val concreteSubType = if (tpe.typeArgs.nonEmpty) {
+        val subTypeSymbol = subType.typeSymbol.asType
+        val subTypeParams = subTypeSymbol.typeParams
+        
+        if (subTypeParams.nonEmpty) {
+          // Find how the subclass extends the parent to understand the type parameter mapping
+          val baseType = subType.baseType(classSymbol)
+          
+          if (baseType != NoType && baseType.typeArgs.nonEmpty) {
+            // Create a type argument list for the subclass by mapping parent's concrete types
+            // through the subclass's relationship to the parent
+            val concreteTypeArgs = subTypeParams.map { subTypeParam =>
+              // Find where this type param appears in the base type
+              val paramSymbol = subTypeParam.asType.toType.typeSymbol
+              val idx = baseType.typeArgs.indexWhere(arg => arg.typeSymbol == paramSymbol)
+              if (idx >= 0 && idx < tpe.typeArgs.length) {
+                tpe.typeArgs(idx)
+              } else {
+                // If we can't find it, keep the type param as-is (shouldn't happen)
+                subTypeParam.asType.toType
+              }
+            }
+            
+            // Apply the concrete type arguments to the subclass type constructor
+            if (concreteTypeArgs.exists(_.typeSymbol.isParameter)) {
+              // Still has type parameters, fallback to subType
+              subType
+            } else {
+              appliedType(subTypeSymbol, concreteTypeArgs)
+            }
+          } else {
+            subType
+          }
+        } else {
+          subType
+        }
+      } else {
+        subType
+      }
+      
+      cq"""_: $concreteSubType => implicitly[_root_.snapshot4s.Repr[$concreteSubType]].toSourceString(a.asInstanceOf[$concreteSubType])"""
     }
 
     c.Expr[Repr[A]](q"""
