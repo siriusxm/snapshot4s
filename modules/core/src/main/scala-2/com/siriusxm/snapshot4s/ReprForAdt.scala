@@ -147,11 +147,11 @@ private[snapshot4s] object ReprForAdtMacros {
   ): Boolean = {
     import c.universe._
 
-    val parentIsGeneric   = parentType.typeArgs.nonEmpty
-    val subTypeSymbol     = subType.typeSymbol.asType
-    val subclassIsGeneric = subTypeSymbol.typeParams.nonEmpty
-    val baseType          = subType.baseType(parentSymbol)
-    val baseTypeNotFound  = baseType == NoType
+    val parentIsGeneric               = parentType.typeArgs.nonEmpty
+    val subTypeSymbol                 = subType.typeSymbol.asType
+    val subclassIsGeneric             = subTypeSymbol.typeParams.nonEmpty
+    val baseTypeWihConcreteParameters = subType.baseType(parentSymbol)
+    val baseTypeNotFound              = baseTypeWihConcreteParameters == NoType
     parentIsGeneric && subclassIsGeneric && !baseTypeNotFound
   }
 
@@ -162,13 +162,13 @@ private[snapshot4s] object ReprForAdtMacros {
   ): Option[c.Type] = {
     import c.universe._
 
-    val subTypeSymbol = subType.typeSymbol.asType
-    val subTypeParams = subTypeSymbol.typeParams
-    val baseType      = subType.baseType(parentSymbol)
+    val subTypeSymbol                 = subType.typeSymbol.asType
+    val subTypeParams                 = subTypeSymbol.typeParams
+    val baseTypeWihConcreteParameters = subType.baseType(parentSymbol) // MyEither[String, Int] instead of MyEither[A, B]
 
     // We want to go from Parent: MyEither[String, Int] to MyEither[A, B] to MyLeft[A, B] to MyLeft[String, Int]
     val concreteTypeArgs = subTypeParams.map { subTypeParam =>
-      findConcreteTypeForParameter(c)(subTypeParam, baseType, parentType)
+      findConcreteTypeForParameter(c)(subTypeParam, baseTypeWihConcreteParameters, parentType)
     }
     val hasUnresolvedTypeParameters = concreteTypeArgs.exists(_.typeSymbol.isParameter)
 
@@ -178,11 +178,12 @@ private[snapshot4s] object ReprForAdtMacros {
 
   private def findConcreteTypeForParameter(c: blackbox.Context)(
       subTypeParam: c.universe.Symbol,
-      baseType: c.Type,
+      baseTypeWihConcreteParameters: c.Type,
       parentType: c.Type
   ): c.Type = {
-    val paramSymbol    = subTypeParam.asType.toType.typeSymbol
-    val idx            = baseType.typeArgs.indexWhere(arg => arg.typeSymbol == paramSymbol)
+    val paramSymbol = subTypeParam.asType.toType.typeSymbol
+    val idx         =
+      baseTypeWihConcreteParameters.typeArgs.indexWhere(arg => arg.typeSymbol == paramSymbol)
     val parameterFound = idx >= 0
     val indexIsValid   = idx < parentType.typeArgs.length
     if (parameterFound && indexIsValid) parentType.typeArgs(idx)
