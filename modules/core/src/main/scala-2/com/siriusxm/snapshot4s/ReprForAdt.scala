@@ -164,7 +164,8 @@ private[snapshot4s] object ReprForAdtMacros {
 
     val subTypeSymbol                 = subType.typeSymbol.asType
     val subTypeParams                 = subTypeSymbol.typeParams
-    val baseTypeWihConcreteParameters = subType.baseType(parentSymbol) // MyEither[String, Int] instead of MyEither[A, B]
+    val baseTypeWihConcreteParameters =
+      subType.baseType(parentSymbol) // MyEither[String, Int] instead of MyEither[A, B]
 
     // We want to go from Parent: MyEither[String, Int] to MyEither[A, B] to MyLeft[A, B] to MyLeft[String, Int]
     val concreteTypeArgs = subTypeParams.map { subTypeParam =>
