@@ -39,7 +39,7 @@ trait ReprTestCases { self: FunSuite =>
   test("Repr handles multi-line strings with quotes") {
     val repr  = getRepr[String]
     val input = "multi\n\"line\"\ntext"
-    expect.same("\"\"\"multi\n\"line\"\ntext\"\"\"", repr.toSourceString(input))
+    expect.same("s\"\"\"multi\n|\"line\"\n|text\"\"\".stripMargin", repr.toSourceString(input))
   }
 
   test("Repr handles multi-line strings with triple quotes") {
@@ -49,6 +49,26 @@ trait ReprTestCases { self: FunSuite =>
     val singleQuote        = "\""
     expect.same(
       s"${singleQuote}multi\\n${escapedTripleQuote}line${escapedTripleQuote}\\ntext${singleQuote}",
+      repr.toSourceString(input)
+    )
+  }
+
+  test("Repr does not add margin for multi-line strings with dollars") {
+    val repr  = getRepr[String]
+    val input = "multi\n$line\ntext"
+    expect.same(
+      "\"\"\"multi\n$line\ntext\"\"\"",
+      repr.toSourceString(input)
+    )
+  }
+
+  test("Repr does not add margin for multi-line strings with long lines") {
+    val repr        = getRepr[String]
+    val longLine    = "long" * 100
+    val input       = s"multi\n${longLine}\ntext"
+    val tripleQuote = "\"" * 3
+    expect.same(
+      s"${tripleQuote}multi\n${longLine}\ntext${tripleQuote}",
       repr.toSourceString(input)
     )
   }
@@ -110,7 +130,7 @@ trait ReprTestCases { self: FunSuite =>
     val repr  = getRepr[SpecialChars]
     val input = SpecialChars("Hello\nWorld", -42)
     expect.same(
-      "SpecialChars(text = \"\"\"Hello\nWorld\"\"\", number = -42)",
+      "SpecialChars(text = s\"\"\"Hello\n|World\"\"\".stripMargin, number = -42)",
       repr.toSourceString(input)
     )
   }
