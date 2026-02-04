@@ -53,20 +53,21 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
   private def printString(
       string: String
   ): String = {
-    val isMultiline = string.contains('\n')
-    if (isMultiline) printMultilineString(string)
-    else printSingleLineString(string)
+    val isMultiline    = string.contains('\n')
+    val hasTripleQuote = string.contains("\"\"\"")
+    if (isMultiline && !hasTripleQuote) printTripleQuotedString(string)
+    else printQuotedString(string)
   }
 
-  private def printMultilineString(string: String): String = {
+  private def printTripleQuotedString(string: String): String = {
     val out = new StringBuilder()
     out.append(quote).append(quote).append(quote)
-    string.map(escapeQuote).foreach(out.append)
+    string.foreach(out.append)
     out.append(quote).append(quote).append(quote)
     out.toString()
   }
 
-  private def printSingleLineString(string: String): String = {
+  private def printQuotedString(string: String): String = {
     val out = new StringBuilder()
     out.append(quote)
     string.map(printChar).foreach(out.append)
@@ -91,11 +92,4 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
         "\\u%04x".format(c.toInt)
       else c.toString
   }
-
-  private def escapeQuote(c: Char): String =
-    c match {
-      case '"' => "\\\""
-      case c   => c.toString
-    }
-
 }
