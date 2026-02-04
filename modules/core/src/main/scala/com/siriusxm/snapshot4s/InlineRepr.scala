@@ -55,11 +55,11 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
   ): String = {
     val isMultiline    = string.contains('\n')
     val hasTripleQuote = string.contains("\"\"\"")
-    if (isMultiline && !hasTripleQuote) printMultilineString(string)
-    else printSingleLineString(string)
+    if (isMultiline && !hasTripleQuote) printTripleQuotedString(string)
+    else printQuotedString(string)
   }
 
-  private def printMultilineString(string: String): String = {
+  private def printTripleQuotedString(string: String): String = {
     val out = new StringBuilder()
     out.append(quote).append(quote).append(quote)
     string.foreach(out.append)
@@ -67,7 +67,7 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
     out.toString()
   }
 
-  private def printSingleLineString(string: String): String = {
+  private def printQuotedString(string: String): String = {
     val out = new StringBuilder()
     out.append(quote)
     string.map(printChar).foreach(out.append)
