@@ -53,8 +53,9 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
   private def printString(
       string: String
   ): String = {
-    val isMultiline = string.contains('\n')
-    if (isMultiline) printMultilineString(string)
+    val isMultiline    = string.contains('\n')
+    val hasTripleQuote = string.contains("\"\"\"")
+    if (isMultiline && !hasTripleQuote) printMultilineString(string)
     else printSingleLineString(string)
   }
 

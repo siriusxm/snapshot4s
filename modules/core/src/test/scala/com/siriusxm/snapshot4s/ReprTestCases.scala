@@ -36,10 +36,20 @@ trait ReprTestCases { self: FunSuite =>
 
   case class SpecialChars(text: String, number: Int)
 
-  test("Repr handles multi-line strings") {
+  test("Repr handles multi-line strings with quotes") {
     val repr  = getRepr[String]
     val input = "multi\n\"line\"\ntext"
     expect.same("\"\"\"multi\n\"line\"\ntext\"\"\"", repr.toSourceString(input))
+  }
+
+  test("Repr handles multi-line strings with triple quotes") {
+    val repr               = getRepr[String]
+    val input              = "multi\n\"\"\"line\"\"\"\ntext"
+    val escapedTripleQuote = "\\\"" * 3
+    expect.same(
+      s"\"multi\\n${escapedTripleQuote}line${escapedTripleQuote}\\ntext\"",
+      repr.toSourceString(input)
+    )
   }
 
   test("Repr handles single field case class") {
