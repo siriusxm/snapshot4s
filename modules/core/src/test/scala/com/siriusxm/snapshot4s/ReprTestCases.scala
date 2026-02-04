@@ -46,8 +46,9 @@ trait ReprTestCases { self: FunSuite =>
     val repr               = getRepr[String]
     val input              = "multi\n\"\"\"line\"\"\"\ntext"
     val escapedTripleQuote = "\\\"" * 3
+    val singleQuote        = "\""
     expect.same(
-      s"\"multi\\n${escapedTripleQuote}line${escapedTripleQuote}\\ntext\"",
+      s"${singleQuote}multi\\n${escapedTripleQuote}line${escapedTripleQuote}\\ntext${singleQuote}",
       repr.toSourceString(input)
     )
   }
