@@ -61,7 +61,7 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
   private def printMultilineString(string: String): String = {
     val out = new StringBuilder()
     out.append(quote).append(quote).append(quote)
-    string.map(escapeQuote).foreach(out.append)
+    string.foreach(out.append)
     out.append(quote).append(quote).append(quote)
     out.toString()
   }
@@ -91,11 +91,4 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
         "\\u%04x".format(c.toInt)
       else c.toString
   }
-
-  private def escapeQuote(c: Char): String =
-    c match {
-      case '"' => "\\\""
-      case c   => c.toString
-    }
-
 }
