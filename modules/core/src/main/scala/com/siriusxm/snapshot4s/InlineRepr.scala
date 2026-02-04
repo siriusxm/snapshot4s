@@ -59,11 +59,42 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
     else printQuotedString(string)
   }
 
+  /** The length beyond which mutli-line strings should not have a margin.
+    * This is arbitrarily set to 5 characters less than scalafmt's default `maxColumn`.
+    */
+  private val maxLineLength: Int = 75
+
   private def printTripleQuotedString(string: String): String = {
+    val lines               = string.split("\n")
+    val canUseStringContext = !string.contains("$")
+    val shouldHaveMargin    = canUseStringContext && lines.forall(_.length < maxLineLength)
+    lines.headOption match {
+      case Some(h) if shouldHaveMargin => printTripleQuotedStringWithMargin(h, lines.tail)
+      case _                           => printBasicTripleQuotedString(string)
+    }
+  }
+
+  private def printTripleQuotedStringWithMargin(
+      firstLine: String,
+      nextLines: Array[String]
+  ): String = {
     val out = new StringBuilder()
-    out.append(quote).append(quote).append(quote)
-    string.foreach(out.append)
-    out.append(quote).append(quote).append(quote)
+    out.append('s').append(quote).append(quote).append(quote).append(firstLine)
+    nextLines.foreach(line => out.append("\n|").append(line))
+    out.append(quote).append(quote).append(quote).append(".stripMargin")
+    out.toString()
+  }
+
+  private def printBasicTripleQuotedString(string: String): String = {
+    val out = new StringBuilder()
+    out
+      .append(quote)
+      .append(quote)
+      .append(quote)
+      .append(string)
+      .append(quote)
+      .append(quote)
+      .append(quote)
     out.toString()
   }
 
