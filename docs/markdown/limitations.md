@@ -27,3 +27,10 @@ val root = (project in file("."))
     })
   .enablePlugins(Snapshot4sPlugin)
 ```
+
+To format generated code with multi-line strings, update your `scalafmt` configuration to use [assumeStandardLibraryStripMargin](https://scalameta.org/scalafmt/docs/configuration.html#assumestandardlibrarystripmargin).
+
+```
+# In .scalafmt.conf
+assumeStandardLibraryStripMargin = true
+```
