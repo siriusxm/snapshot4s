@@ -25,7 +25,7 @@ lazy val buildInfoSettings: Seq[Setting[?]] = {
 lazy val scala3Version          = "3.3.7"
 lazy val scala213Version        = "2.13.18"
 lazy val sbt1PluginScalaVersion = "2.12.21"
-lazy val sbt2PluginScalaVersion = "3.7.4"
+lazy val sbt2PluginScalaVersion = "3.8.1"
 
 lazy val scalaVersions = Seq(
   scala3Version,
