@@ -73,22 +73,33 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
     if (isTuple) {
       deriveTupleRepr(c)(paramLists.head)
     } else {
-      if (paramLists.isEmpty || paramLists.head.isEmpty) {
-        c.Expr[Repr[A]](q"""
+      deriveCaseClassRepr(c)(tpe, typeName, classSymbol, paramLists)
+    }
+  }
+
+  private def deriveCaseClassRepr[A: c.WeakTypeTag](c: blackbox.Context)(
+      tpe: c.universe.Type,
+      typeName: String,
+      classSymbol: c.universe.ClassSymbol,
+      paramLists: List[List[c.universe.Symbol]]
+  ): c.Expr[Repr[A]] = {
+    import c.universe._
+    if (paramLists.isEmpty || paramLists.head.isEmpty) {
+      c.Expr[Repr[A]](q"""
         new _root_.snapshot4s.Repr[$tpe] {
           def toSourceString(a: $tpe): String = ${typeName}
         }
       """)
-      } else {
-        val params                 = paramLists.head
-        val labelsAndReprInstances = params.map { param =>
-          val label     = param.name.decodedName.toString
-          val paramType = param.typeSignature.finalResultType.asSeenFrom(tpe, classSymbol)
-          val repr      =
-            q"implicitly[_root_.snapshot4s.Repr[$paramType]].asInstanceOf[_root_.snapshot4s.Repr[Any]]"
-          q"($label, $repr)"
-        }
-        c.Expr[Repr[A]](q"""
+    } else {
+      val params                 = paramLists.head
+      val labelsAndReprInstances = params.map { param =>
+        val label     = param.name.decodedName.toString
+        val paramType = param.typeSignature.finalResultType.asSeenFrom(tpe, classSymbol)
+        val repr      =
+          q"implicitly[_root_.snapshot4s.Repr[$paramType]].asInstanceOf[_root_.snapshot4s.Repr[Any]]"
+        q"($label, $repr)"
+      }
+      c.Expr[Repr[A]](q"""
         new _root_.snapshot4s.Repr[$tpe] {
           def toSourceString(a: $tpe): String = {
             val product = a.asInstanceOf[Product]
@@ -101,8 +112,8 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
         }
       }
       """)
-      }
     }
+
   }
 
   private def deriveTupleRepr[A: c.WeakTypeTag](
