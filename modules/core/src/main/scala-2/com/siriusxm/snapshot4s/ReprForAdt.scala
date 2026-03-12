@@ -69,6 +69,21 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
     val constructor = classSymbol.primaryConstructor.asMethod
     val paramLists  = constructor.paramLists
 
+    val isTuple = tpe.typeSymbol.fullName.startsWith("scala.Tuple")
+    if (isTuple) {
+      deriveTupleRepr(c)(paramLists.head)
+    } else {
+      deriveCaseClassRepr(c)(tpe, typeName, classSymbol, paramLists)
+    }
+  }
+
+  private def deriveCaseClassRepr[A: c.WeakTypeTag](c: blackbox.Context)(
+      tpe: c.universe.Type,
+      typeName: String,
+      classSymbol: c.universe.ClassSymbol,
+      paramLists: List[List[c.universe.Symbol]]
+  ): c.Expr[Repr[A]] = {
+    import c.universe._
     if (paramLists.isEmpty || paramLists.head.isEmpty) {
       c.Expr[Repr[A]](q"""
         new _root_.snapshot4s.Repr[$tpe] {
@@ -98,6 +113,34 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
       }
       """)
     }
+
+  }
+
+  private def deriveTupleRepr[A: c.WeakTypeTag](
+      c: blackbox.Context
+  )(params: List[c.universe.Symbol]): c.Expr[Repr[A]] = {
+    import c.universe._
+
+    val tpe         = weakTypeOf[A]
+    val classSymbol = tpe.typeSymbol.asClass
+
+    val reprInstances = params.map { param =>
+      val paramType = param.typeSignature.finalResultType.asSeenFrom(tpe, classSymbol)
+      q"implicitly[_root_.snapshot4s.Repr[$paramType]].asInstanceOf[_root_.snapshot4s.Repr[Any]]"
+    }
+    c.Expr[Repr[A]](q"""
+        new _root_.snapshot4s.Repr[$tpe] {
+          def toSourceString(a: $tpe): String = {
+            val product = a.asInstanceOf[Product]
+            val elements = product.productIterator.toList
+            val reprInstances = List(..$reprInstances)
+            val args = elements.zip(reprInstances).map { case (elem, repr) =>
+               repr.toSourceString(elem)
+            }
+            "(" + args.mkString(", ") + ")"
+        }
+      }
+      """)
   }
 
   private def deriveSumRepr[A: c.WeakTypeTag](c: blackbox.Context): c.Expr[Repr[A]] = {

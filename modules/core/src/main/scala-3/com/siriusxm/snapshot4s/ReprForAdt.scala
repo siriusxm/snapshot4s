@@ -43,10 +43,12 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types""")
   private inline def derivedProduct[A](
       mirror: Mirror.ProductOf[A],
       elemInstances: Tuple
-  ): Repr[A] = {
-    val typeName   = constValue[mirror.MirroredLabel]
-    val elemLabels = constValueTuple[mirror.MirroredElemLabels]
-    ProductRepr(typeName, elemLabels, elemInstances)
+  ): Repr[A] = summonFrom {
+    case given <:<[A, Tuple] => TupleRepr(elemInstances)
+    case _                   =>
+      val typeName   = constValue[mirror.MirroredLabel]
+      val elemLabels = constValueTuple[mirror.MirroredElemLabels]
+      ProductRepr(typeName, elemLabels, elemInstances)
   }
 
   private inline def derivedSum[A](mirror: Mirror.SumOf[A], elemInstances: Tuple): Repr[A] =
@@ -69,6 +71,20 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types""")
           }
         s"$typeName(${namedArgs.mkString(", ")})"
       }
+    }
+  }
+
+  class TupleRepr[A](elemInstances: Tuple) extends Repr[A] {
+
+    def toSourceString(a: A): String = {
+      val product  = a.asInstanceOf[Product]
+      val elements = product.productIterator.toArray
+
+      val reprInstances = elemInstances.toList.map(_.asInstanceOf[Repr[Any]])
+      val args          = elements.zip(reprInstances).map { case (elem, reprInstance) =>
+        reprInstance.toSourceString(elem)
+      }
+      s"(${args.mkString(", ")})"
     }
   }
 
