@@ -199,10 +199,10 @@ trait ReprTestCases { self: FunSuite =>
     implicit val string: Repr[String] = _ => "CustomString(test)"
   }
 
-  test("Repr handles tuple syntax with parentheses") {
-    val repr  = getRepr[(Int, String)]
-    val input = (42, "hello")
-    expect.same("""(42, "hello")""", repr.toSourceString(input))
+  test("Repr handles tuple syntax") {
+    val repr  = getRepr[(Int, String, Boolean)]
+    val input = (42, "hello", true)
+    expect.same("""(42, "hello", true)""", repr.toSourceString(input))
   }
 
   protected def getRepr[T](implicit repr: Repr[T]): Repr[T] = repr
