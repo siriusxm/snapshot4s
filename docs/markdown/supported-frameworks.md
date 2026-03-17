@@ -8,7 +8,7 @@ sidebar_position: 4
  - MUnit via `snapshot4s-munit`
  - ScalaTest via `snapshot4s-scalatest`
 
-All integrations support Scala.js.
+All integrations support Scala.js and Scala Native.
 
 If you use a different test framework, you can easily [develop your own integration](contributing/supporting-a-test-framework.md).
 

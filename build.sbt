@@ -53,8 +53,11 @@ inThisBuild(
     githubWorkflowOSes         := Seq("ubuntu-22.04", "windows-2025"),
     githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
     githubWorkflowPublishTargetBranches += RefPredicate.Equals(Ref.Branch("main")),
-    ThisBuild / githubWorkflowBuild += WorkflowStep
-      .Run(List("sbt scripted"), name = Some("Scripted tests")),
+    ThisBuild / githubWorkflowBuild ~= (_.flatMap { step =>
+      if (step.name.contains("Test")) {
+        githubWorkflowTestSteps
+      } else Seq(step)
+    }),
     tlBaseVersion          := "0.2",
     tlUntaggedAreSnapshots := false,
     tlFatalWarnings        := sys.env.get("GITHUB_ACTIONS").contains("true"),
@@ -69,18 +72,57 @@ inThisBuild(
 )
 
 lazy val root = (project in file("."))
-  .aggregate(allModules: _*)
+  .aggregate(
+    Seq[ProjectReference](docs, pluginTests, pluginNativeTests) ++ multiPlatformModules.flatMap(
+      _.projectRefs
+    ): _*
+  )
   .enablePlugins(NoPublishPlugin)
 
-lazy val allModules: Seq[ProjectReference] = Seq(
-  Seq[ProjectReference](docs, pluginTests),
-  plugin.projectRefs,
-  hashing.projectRefs,
-  core.projectRefs,
-  weaver.projectRefs,
-  munit.projectRefs,
-  scalatest.projectRefs
-).flatten
+lazy val multiPlatformModules = Seq(plugin, hashing, core, weaver, munit, scalatest)
+
+// Separate out JS / JVM and Native tests.
+// The CI build for Windows can then exclude Native tests.
+lazy val rootJsJvm = (project in file("rootJsJvm"))
+  .aggregate(
+    (Seq(docs, pluginTests) ++ multiPlatformModules
+      .flatMap(module =>
+        module.filterProjects(Seq(VirtualAxis.jvm)) ++ module.filterProjects(Seq(VirtualAxis.js))
+      ))
+      .map(p => p: ProjectReference): _*
+  )
+  .enablePlugins(NoPublishPlugin)
+
+lazy val rootNative = (project in file("rootNative"))
+  .aggregate(
+    (pluginNativeTests +: multiPlatformModules
+      .flatMap(_.filterProjects(Seq(VirtualAxis.native))))
+      .map(p => p: ProjectReference): _*
+  )
+  .enablePlugins(NoPublishPlugin)
+
+lazy val githubWorkflowTestSteps: Seq[WorkflowStep] = Seq(
+  WorkflowStep.Run(
+    List("sbt '++ ${{ matrix.scala }}' 'rootJsJvm / test'"),
+    name = Some("Test JS JVM")
+  ),
+  WorkflowStep.Run(
+    commands = List("sbt '++ ${{ matrix.scala }}' 'rootNative / test'"),
+    name = Some("Test Native"),
+    cond = Some("!contains(runner.os, 'windows')")
+  ),
+  WorkflowStep
+    .Run(
+      List("sbt 'rootJsJvm / scripted'"),
+      name = Some("Scripted tests")
+    ),
+  WorkflowStep
+    .Run(
+      List("sbt 'rootNative / scripted'"),
+      name = Some("Scripted Native tests"),
+      cond = Some("!contains(runner.os, 'windows')")
+    )
+)
 
 lazy val pluginSettings = Seq(
   sbtPluginPublishLegacyMavenStyle := false,
@@ -108,6 +150,12 @@ lazy val hashing = (projectMatrix in file("modules/hashing"))
   )
   .jvmPlatform(scalaVersions = scalaVersions)
   .jsPlatform(scalaVersions = scalaVersions)
+  .nativePlatform(scalaVersions = scalaVersions)
+
+lazy val sharedJvmNativeSettings = Seq(
+  libraryDependencies += "com.lihaoyi" %%% "os-lib" % Versions.oslib,
+  (Compile / unmanagedSourceDirectories) += (Compile / scalaSource).value.getParentFile / "scalajvmnative"
+)
 
 lazy val core = (projectMatrix in file("modules/core"))
   .settings(
@@ -123,12 +171,16 @@ lazy val core = (projectMatrix in file("modules/core"))
   .dependsOn(hashing)
   .jvmPlatform(
     scalaVersions = scalaVersions,
-    libraryDependencies += "com.lihaoyi" %% "os-lib" % Versions.oslib
+    sharedJvmNativeSettings
   )
   .jsPlatform(
     scalaVersions = scalaVersions,
     // module support is required to run tests
     Test / scalaJSLinkerConfig ~= { _.withModuleKind(ModuleKind.CommonJSModule) }
+  )
+  .nativePlatform(
+    scalaVersions = scalaVersions,
+    sharedJvmNativeSettings
   )
 
 lazy val munit = (projectMatrix in file("modules/munit"))
@@ -143,6 +195,7 @@ lazy val munit = (projectMatrix in file("modules/munit"))
   .dependsOn(core)
   .jvmPlatform(scalaVersions = scalaVersions)
   .jsPlatform(scalaVersions = scalaVersions)
+  .nativePlatform(scalaVersions = scalaVersions)
 
 lazy val weaver = (projectMatrix in file("modules/weaver"))
   .settings(
@@ -156,6 +209,7 @@ lazy val weaver = (projectMatrix in file("modules/weaver"))
   .dependsOn(core)
   .jvmPlatform(scalaVersions = scalaVersions)
   .jsPlatform(scalaVersions = scalaVersions)
+  .nativePlatform(scalaVersions = scalaVersions)
 
 lazy val scalatest = (projectMatrix in file("modules/scalatest"))
   .settings(
@@ -169,6 +223,7 @@ lazy val scalatest = (projectMatrix in file("modules/scalatest"))
   .dependsOn(core)
   .jvmPlatform(scalaVersions = scalaVersions)
   .jsPlatform(scalaVersions = scalaVersions)
+  .nativePlatform(scalaVersions = scalaVersions)
 
 // This filter finds the libraries required by the scripted tests.
 lazy val scriptedScopeFilter = ScopeFilter(
@@ -198,8 +253,26 @@ lazy val plugin = (projectMatrix in (file("modules/plugin")))
 lazy val pluginTests = (project in (file("modules/plugin-sbt1-tests")))
   .enablePlugins(ScriptedPlugin)
   .dependsOn(hashing.jvm(sbt1PluginScalaVersion))
+  .dependsOn(plugin.jvm(sbt1PluginScalaVersion))
   .settings(
     name         := "plugin-sbt1-tests",
+    scalaVersion := sbt1PluginScalaVersion,
+    pluginSettings,
+    mimaPreviousArtifacts := Set.empty,
+    scriptedDependencies  := {
+      scriptedDependencies.value
+      publishLocal.all(scriptedScopeFilter).value
+    }
+  )
+
+// These scripted tests depend on Scala Native.
+// They do not yet support SBT 2 and should not be run on Windows.
+lazy val pluginNativeTests = (project in (file("modules/plugin-sbt1-native-tests")))
+  .enablePlugins(ScriptedPlugin)
+  .dependsOn(hashing.jvm(sbt1PluginScalaVersion))
+  .dependsOn(plugin.jvm(sbt1PluginScalaVersion))
+  .settings(
+    name         := "plugin-sbt1-native-tests",
     scalaVersion := sbt1PluginScalaVersion,
     pluginSettings,
     mimaPreviousArtifacts := Set.empty,
