@@ -73,7 +73,7 @@ lazy val root = (project in file("."))
   .enablePlugins(NoPublishPlugin)
 
 lazy val allModules: Seq[ProjectReference] = Seq(
-  Seq[ProjectReference](docs),
+  Seq[ProjectReference](docs, pluginTests),
   plugin.projectRefs,
   hashing.projectRefs,
   core.projectRefs,
