@@ -6,10 +6,6 @@ sidebar_position: 7
 
 This page is a shortlist of the known limitations of snapshot4s. If you encounter any issues not listed below, we encourage you to [report them](https://github.com/siriusxm/snapshot4s/issues/new?template=bug.md).
 
-## Scala Native is not supported
-
-`snapshot4s` doesn't yet support Scala Native.
-
 ## Promoted code may fail to compile with `not found` errors
 
 `snapshot4s` uses `pprint` to efficiently generate the source code corresponding to an expected value.  This doesn’t add import statements for `enum` and classes within objects. You may need to add an import statement corresponding to the `enum` or object in question.

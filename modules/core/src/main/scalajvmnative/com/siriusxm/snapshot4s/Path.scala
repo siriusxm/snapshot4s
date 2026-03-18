@@ -16,12 +16,9 @@
 
 package snapshot4s
 
-final class Path private[snapshot4s] (val osPath: os.Path) extends PathApi {
+final class Path private[snapshot4s] (val osPath: os.Path) extends PathApi with PathWrite {
 
   private[snapshot4s] def read(): String = os.read(osPath)
-
-  private[snapshot4s] def write(contents: String): Unit =
-    os.write.over(osPath, contents, createFolders = true)
 
   private[snapshot4s] def relativeTo(baseDirectory: Path): Option[RelPath] =
     if (osPath.startsWith(baseDirectory.osPath))
