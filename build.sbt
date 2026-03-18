@@ -106,6 +106,8 @@ lazy val githubWorkflowTestSteps: Seq[WorkflowStep] = Seq(
     List("sbt '++ ${{ matrix.scala }}' 'rootJsJvm / test'"),
     name = Some("Test JS JVM")
   ),
+  // Native tests fail on Windows due to insufficient heap space.
+  // Skip tests and native scripted tests.
   WorkflowStep.Run(
     commands = List("sbt '++ ${{ matrix.scala }}' 'rootNative / test'"),
     name = Some("Test Native"),
