@@ -55,6 +55,17 @@ sbt test
 sbt snapshot4sPromote
 ```
 
+### Suppressing `dead code` warnings
+
+If your code fails to compile with `dead code following this construct`, add a `nowarn` annotation to your `assertInlineSnapshot` call.
+
+```
+assertInlineSnapshot(1, ???): @annotation.nowarn
+```
+
+You can remove this after promoting your snapshot.
+
+
 ```scala mdoc:nest:silent
 case class Config(environment: String, region: String)
 val found = Config(environment = "dev", region = "us-east-2")
