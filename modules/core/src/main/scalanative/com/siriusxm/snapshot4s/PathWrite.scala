@@ -16,9 +16,6 @@
 
 package snapshot4s
 
-import java.io.IOException
-import java.nio.file.DirectoryNotEmptyException
-
 private[snapshot4s] trait PathWrite { path: Path =>
 
   private[snapshot4s] def write(contents: String): Unit = {
