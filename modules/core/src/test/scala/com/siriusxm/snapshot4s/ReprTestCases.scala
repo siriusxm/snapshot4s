@@ -36,14 +36,20 @@ trait ReprTestCases { self: FunSuite =>
 
   case class SpecialChars(text: String, number: Int)
 
+  test("Repr.apply summons a Repr instance.") {
+    val repr  = Repr[Int]
+    val input = 42
+    expect.same("42", repr.toSourceString(input))
+  }
+
   test("Repr handles multi-line strings with quotes") {
-    val repr  = getRepr[String]
+    val repr  = Repr[String]
     val input = "multi\n\"line\"\ntext"
     expect.same("s\"\"\"multi\n|\"line\"\n|text\"\"\".stripMargin", repr.toSourceString(input))
   }
 
   test("Repr handles multi-line strings with triple quotes") {
-    val repr               = getRepr[String]
+    val repr               = Repr[String]
     val input              = "multi\n\"\"\"line\"\"\"\ntext"
     val escapedTripleQuote = "\\\"" * 3
     val singleQuote        = "\""
@@ -54,7 +60,7 @@ trait ReprTestCases { self: FunSuite =>
   }
 
   test("Repr does not add margin for multi-line strings with dollars") {
-    val repr  = getRepr[String]
+    val repr  = Repr[String]
     val input = "multi\n$line\ntext"
     expect.same(
       "\"\"\"multi\n$line\ntext\"\"\"",
@@ -63,7 +69,7 @@ trait ReprTestCases { self: FunSuite =>
   }
 
   test("Repr does not add margin for multi-line strings with long lines") {
-    val repr        = getRepr[String]
+    val repr        = Repr[String]
     val longLine    = "long" * 100
     val input       = s"multi\n${longLine}\ntext"
     val tripleQuote = "\"" * 3
@@ -74,31 +80,31 @@ trait ReprTestCases { self: FunSuite =>
   }
 
   test("Repr handles single field case class") {
-    val repr  = getRepr[SingleField]
+    val repr  = Repr[SingleField]
     val input = SingleField(42)
     expect.same("SingleField(x = 42)", repr.toSourceString(input))
   }
 
   test("Repr handles case class with many fields") {
-    val repr  = getRepr[ManyFields]
+    val repr  = Repr[ManyFields]
     val input = ManyFields(1, "hello", true, 999L)
     expect.same("ManyFields(a = 1, b = \"hello\", c = true, d = 999L)", repr.toSourceString(input))
   }
 
   test("Repr handles nested case classes") {
-    val repr  = getRepr[NestedCase]
+    val repr  = Repr[NestedCase]
     val input = NestedCase(SingleField(99))
     expect.same("NestedCase(inner = SingleField(x = 99))", repr.toSourceString(input))
   }
 
   test("Repr handles case class with Option field") {
-    val repr      = getRepr[WithOption]
+    val repr      = Repr[WithOption]
     val noneInput = WithOption(None)
     expect.same("WithOption(value = None)", repr.toSourceString(noneInput))
   }
 
   test("Repr handles case class with Either field") {
-    val repr       = getRepr[WithEither]
+    val repr       = Repr[WithEither]
     val leftInput  = WithEither(Left("error"))
     val rightInput = WithEither(Right(42))
 
@@ -115,19 +121,19 @@ trait ReprTestCases { self: FunSuite =>
   }
 
   test("Repr handles sealed trait with case class") {
-    val repr  = getRepr[ComplexAdt]
+    val repr  = Repr[ComplexAdt]
     val input = DataCase(10, "data")
     expect.same("DataCase(x = 10, y = \"data\")", repr.toSourceString(input))
   }
 
   test("Repr handles sealed trait with case object") {
-    val repr              = getRepr[ComplexAdt]
+    val repr              = Repr[ComplexAdt]
     val input: ComplexAdt = EmptyCase
     expect.same("EmptyCase", repr.toSourceString(input))
   }
 
   test("Repr handles special characters in values") {
-    val repr  = getRepr[SpecialChars]
+    val repr  = Repr[SpecialChars]
     val input = SpecialChars("Hello\nWorld", -42)
     expect.same(
       "SpecialChars(text = s\"\"\"Hello\n|World\"\"\".stripMargin, number = -42)",
@@ -200,10 +206,8 @@ trait ReprTestCases { self: FunSuite =>
   }
 
   test("Repr handles tuple syntax") {
-    val repr  = getRepr[(Int, String, Boolean)]
+    val repr  = Repr[(Int, String, Boolean)]
     val input = (42, "hello", true)
     expect.same("""(42, "hello", true)""", repr.toSourceString(input))
   }
-
-  protected def getRepr[T](implicit repr: Repr[T]): Repr[T] = repr
 }
