@@ -17,6 +17,6 @@
 package snapshot4s
 
 private object ErrorMessages {
-  val nonExistent: String = "Snapshot does not exist. Run 'sbt snapshot4sPromote' to create it."
-  val failure: String     = "Snapshot not equal. Run 'sbt snapshot4sPromote' to update it."
+  val nonExistent: String = "Snapshot does not exist. Run 'snapshot4sPromote' to create it."
+  val failure: String     = "Snapshot not equal. Run 'snapshot4sPromote' to update it."
 }

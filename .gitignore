@@ -23,6 +23,9 @@ project/plugins/project/
 ### SBT Patch ###
 .bsp/
 
+### Mill ###
+out/
+
 ### Scala ###
 *.class
 *.log

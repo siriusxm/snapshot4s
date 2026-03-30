@@ -2,14 +2,15 @@
 sidebar_position: 3
 ---
 
-# SBT setup
+# Setting up your project
 
-You can enable `snapshot4s` for a variety of SBT project layouts.
+You can enable `snapshot4s` for a variety of project layouts.
 
  - For single project SBT builds follow [these instructions](#single-project-builds).
  - For multi-project SBT builds follow [these instructions](#multi-project-builds)
  - For `sbt-projectmatrix` follow [these instructions](#sbt-projectmatrix).
  - For `sbt-crossproject` and `sbt-typelevel` follow [these instructions](#sbt-crossproject-and-sbt-typelevel).
+ - For `mill` builds follow [these instructions](#mill-builds).
 
 ## Single project builds
 
@@ -89,3 +90,45 @@ val core = crossProject(JVMPlatform)
 ```
 
 Finally, add the integration library for your [test framework](./supported-frameworks.md).
+
+## Mill builds
+
+Snapshot4s supports [mill](https://mill-build.org/mill/index.html) version 1.
+
+Import the `mill-snapshot4s` plugin into your `build.mill`.
+
+```scala
+//| mvnDeps: ["com.siriusxm::mill-snapshot4s::@LATEST_STABLE_VERSION@"]
+```
+
+Extend the `Snapshot4sModule` in your `test` object. 
+
+```scala
+import snapshot4s.Snapshot4sModule
+
+object myProject extends ScalaModule {
+  object test extends ScalaTests with Snapshot4sModule { ... }
+}
+```
+
+Finally, add the integration library for your [test framework](./supported-frameworks.md).
+
+For example, to use `snapshot4s` with `MUnit`:
+
+```scala
+//| mvnDeps: ["com.siriusxm::mill-snapshot4s::@LATEST_STABLE_VERSION@"]
+import snapshot4s.Snapshot4sModule
+
+object myProject extends ScalaModule {
+  object test extends ScalaTests with Snapshot4sModule with TestModule.Munit {
+    override def mvnDeps =
+      super.mvnDeps() :+ mvn"com.siriusxm::snapshot4s-munit:${snapshot4s.BuildInfo.snapshot4sVersion}"
+  }
+}
+```
+
+You can update your tests via the `snapshot4sPromote` task:
+
+```sh
+mill myProject.test.snapshot4sPromote
+```

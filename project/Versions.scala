@@ -3,6 +3,7 @@ object Versions {
   val weaver                 = "0.13.0"
   val pprint                 = "0.9.6"
   val munit                  = "1.3.1"
+  val mill                   = "1.1.7"
   val scalatest              = "3.2.20"
   val scalacCompatAnnotation = "0.1.4"
 }

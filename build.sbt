@@ -26,6 +26,7 @@ lazy val scala3Version          = "3.3.7"
 lazy val scala213Version        = "2.13.18"
 lazy val sbt1PluginScalaVersion = "2.12.21"
 lazy val sbt2PluginScalaVersion = "3.8.3"
+lazy val millScalaVersion       = "3.8.2"
 
 lazy val scalaVersions = Seq(
   scala3Version,
@@ -73,19 +74,20 @@ inThisBuild(
 
 lazy val root = (project in file("."))
   .aggregate(
-    Seq[ProjectReference](docs, pluginTests, pluginNativeTests) ++ multiPlatformModules.flatMap(
-      _.projectRefs
-    ): _*
+    Seq[ProjectReference](docs, mill, pluginTests, pluginNativeTests) ++ multiPlatformModules
+      .flatMap(
+        _.projectRefs
+      ): _*
   )
   .enablePlugins(NoPublishPlugin)
 
-lazy val multiPlatformModules = Seq(plugin, hashing, core, weaver, munit, scalatest)
+lazy val multiPlatformModules = Seq(pluginCore, plugin, hashing, core, weaver, munit, scalatest)
 
 // Separate out JS / JVM and Native tests.
 // The CI build for Windows can then exclude Native tests.
 lazy val rootJsJvm = (project in file("rootJsJvm"))
   .aggregate(
-    (Seq(docs, pluginTests) ++ multiPlatformModules
+    (Seq(docs, mill, pluginTests) ++ multiPlatformModules
       .flatMap(module =>
         module.filterProjects(Seq(VirtualAxis.jvm)) ++ module.filterProjects(Seq(VirtualAxis.js))
       ))
@@ -234,9 +236,17 @@ lazy val scriptedScopeFilter = ScopeFilter(
   )
 )
 
+lazy val pluginCore = (projectMatrix in (file("modules/plugin-core")))
+  .dependsOn(hashing)
+  .settings(
+    name                  := "snapshot4s-plugin-core",
+    mimaPreviousArtifacts := Set.empty
+  )
+  .jvmPlatform(scalaVersions = scalaVersions)
+
 lazy val plugin = (projectMatrix in (file("modules/plugin")))
   .enablePlugins(SbtPlugin, BuildInfoPlugin)
-  .dependsOn(hashing)
+  .dependsOn(pluginCore)
   .settings(
     name := "sbt-snapshot4s",
     buildInfoSettings,
@@ -249,6 +259,51 @@ lazy val plugin = (projectMatrix in (file("modules/plugin")))
     }
   )
   .jvmPlatform(scalaVersions = Seq(sbt1PluginScalaVersion, sbt2PluginScalaVersion))
+
+lazy val mill = (project in (file("modules/mill")))
+  .enablePlugins(BuildInfoPlugin)
+  .dependsOn(pluginCore.jvm(scalaVersion = scala3Version))
+  .settings(
+    name := "mill-snapshot4s",
+    // Embed the Mill version into the artifact name, following Mill plugin conventions
+    // This produces an artifact named mill-snapshot4s_mill1_3
+    crossVersion := CrossVersion.binaryWith("mill1_", ""),
+    buildInfoSettings,
+    buildInfoKeys += BuildInfoKey
+      .map(Test / resourceDirectory)(kv => ("testResourceDirectory", kv._2)),
+    mimaPreviousArtifacts := Set.empty,
+    // Mill is compiled using Scala 3.8.
+    scalaVersion := millScalaVersion,
+    // Scala 3.8 drops support of JDK 8 and 11.
+    tlJdkRelease := Some(17),
+    libraryDependencies ++= Seq(
+      "com.lihaoyi"    %% "mill-libs"    % Versions.mill,
+      "com.lihaoyi"    %% "mill-testkit" % Versions.mill   % Test,
+      "org.typelevel" %%% "weaver-cats"  % Versions.weaver % Test
+    ),
+    excludeDependencies ++= {
+      // mill-libs transitively pulls both _2.13 and _3 builds of
+      // scala-collection-compat and scala-xml. Exclude the _2.13
+      // libs.
+      Seq(
+        ExclusionRule(
+          "org.scala-lang.modules",
+          "scala-collection-compat_2.13"
+        ),
+        ExclusionRule("org.scala-lang.modules", "scala-xml_2.13")
+      )
+    },
+    publishLocal := {
+      // unit tests depend on the snapshot4s-weaver artifact
+      (core.jvm(scala3Version) / publishLocal).value
+      (hashing.jvm(scala3Version) / publishLocal).value
+      (weaver.jvm(scala3Version) / publishLocal).value
+      publishLocal.value
+    },
+    Test / test := (Test / test).dependsOn(publishLocal).value,
+    // Separate the test classpath from SBT's classpath
+    Test / fork := true
+  )
 
 // These scripted tests depend on plugins that do not yet support SBT 2 (scalajs and sbt-typelevel)
 // Once their dependencies support SBT 2, these tests can be incorporated into the plugin module.
