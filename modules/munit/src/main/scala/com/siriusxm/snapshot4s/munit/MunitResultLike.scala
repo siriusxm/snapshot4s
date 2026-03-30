@@ -23,18 +23,19 @@ import snapshot4s.*
 
 private object MunitResultLike {
 
-  def resultLike[A](loc: Location, diffOptions: DiffOptions): ResultLike[A, Unit] =
+  def resultLike[A](loc: Location, diffOptions: DiffOptions, repr: Repr[A]): ResultLike[A, Unit] =
     new ResultLike[A, Unit] {
 
       def apply(result: () => Result[A]): Unit = {
-        resultToAssertion(result(), loc, diffOptions)
+        resultToAssertion(result(), loc, diffOptions, repr)
       }
     }
 
   private def resultToAssertion[A](
       result: Result[A],
       loc: Location,
-      diffOptions: DiffOptions
+      diffOptions: DiffOptions,
+      repr: Repr[A]
   ): Unit = {
     result match {
       case _: Result.Success[?]     => ()
@@ -42,7 +43,10 @@ private object MunitResultLike {
         throw Assertions.fail(ErrorMessages.nonExistent)(loc, diffOptions)
       case Result.Failure(found, snapshot) =>
         throw Assertions
-          .fail(diffReport(found.toString, snapshot.toString, diffOptions))(loc, diffOptions)
+          .fail(diffReport(repr.toSourceString(found), repr.toSourceString(snapshot), diffOptions))(
+            loc,
+            diffOptions
+          )
     }
   }
 

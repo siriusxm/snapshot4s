@@ -19,7 +19,7 @@ package snapshot4s.munit
 import _root_.munit.Location
 import _root_.munit.diff.DiffOptions
 
-import snapshot4s.{ResultLike, SnapshotAssertions as CoreSnapshotAssertions, SnapshotEq}
+import snapshot4s.{Repr, ResultLike, SnapshotAssertions as CoreSnapshotAssertions, SnapshotEq}
 
 trait SnapshotAssertions extends CoreSnapshotAssertions[Unit] {
 
@@ -27,9 +27,10 @@ trait SnapshotAssertions extends CoreSnapshotAssertions[Unit] {
 
   implicit def munitResultLike[A](implicit
       loc: Location,
-      diffOptions: DiffOptions
+      diffOptions: DiffOptions,
+      repr: Repr[A]
   ): ResultLike[A, Unit] =
-    MunitResultLike.resultLike[A](loc, diffOptions)
+    MunitResultLike.resultLike[A](loc, diffOptions, repr)
 }
 
 object SnapshotAssertions extends SnapshotAssertions

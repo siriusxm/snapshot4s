@@ -20,7 +20,7 @@ import org.scalactic.Prettifier
 import org.scalactic.source.Position
 import org.scalatest.Assertion
 
-import snapshot4s.{ResultLike, SnapshotAssertions as CoreSnapshotAssertions, SnapshotEq}
+import snapshot4s.{Repr, ResultLike, SnapshotAssertions as CoreSnapshotAssertions, SnapshotEq}
 
 trait SnapshotAssertions extends CoreSnapshotAssertions[Assertion] {
 
@@ -28,9 +28,10 @@ trait SnapshotAssertions extends CoreSnapshotAssertions[Assertion] {
 
   implicit def scalatestResultLike[A](implicit
       pos: Position,
-      prettifier: Prettifier
+      prettifier: Prettifier,
+      repr: Repr[A]
   ): ResultLike[A, Assertion] =
-    ScalaTestResultLike.resultLike[A](pos, prettifier)
+    ScalaTestResultLike.resultLike[A](pos, prettifier, repr)
 }
 
 object SnapshotAssertions extends SnapshotAssertions

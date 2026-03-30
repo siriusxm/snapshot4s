@@ -34,8 +34,11 @@ private[weaver] trait SnapshotEqInstances extends LowPrioritySnapshotEq {
 
 trait SnapshotExpectations extends SnapshotAssertions[IO[Expectations]] with SnapshotEqInstances {
 
-  implicit def weaverResultLike[A](implicit loc: SourceLocation): ResultLike[A, IO[Expectations]] =
-    WeaverResultLike.resultLike[A](loc)
+  implicit def weaverResultLike[A](implicit
+      loc: SourceLocation,
+      reprA: Repr[A]
+  ): ResultLike[A, IO[Expectations]] =
+    WeaverResultLike.resultLike[A](loc, reprA)
 }
 
 object SnapshotExpectations extends SnapshotExpectations
