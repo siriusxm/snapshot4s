@@ -27,18 +27,23 @@ import snapshot4s.*
 
 private object ScalaTestResultLike {
 
-  def resultLike[A](pos: Position, prettifier: Prettifier): ResultLike[A, Assertion] =
+  def resultLike[A](
+      pos: Position,
+      prettifier: Prettifier,
+      repr: Repr[A]
+  ): ResultLike[A, Assertion] =
     new ResultLike[A, Assertion] {
 
       def apply(result: () => Result[A]): Assertion = {
-        resultToAssertion(result(), pos, prettifier)
+        resultToAssertion(result(), pos, prettifier, repr)
       }
     }
 
   private def resultToAssertion[A](
       result: Result[A],
       pos: Position,
-      prettifier: Prettifier
+      prettifier: Prettifier,
+      repr: Repr[A]
   ): Assertion = {
     result match {
       case _: Result.Success[?]     => Succeeded
@@ -51,7 +56,7 @@ private object ScalaTestResultLike {
           analysis = IndexedSeq.empty[String]
         )
       case Result.Failure(found, snapshot) =>
-        val diff = prettifier(found, snapshot)
+        val diff = prettifier(repr.toSourceString(found), repr.toSourceString(snapshot))
         throw new TestFailedException(
           _ => Some(s"${ErrorMessages.failure} Expected: ${diff.right}, but got ${diff.left}"),
           cause = None,

@@ -20,20 +20,21 @@ import _root_.weaver.{ExpectationFailed, Expectations, SourceLocation}
 import cats.data.{NonEmptyList, Validated}
 import cats.effect.IO
 
-import snapshot4s.{ErrorMessages, Result, ResultLike}
+import snapshot4s.{ErrorMessages, Repr, Result, ResultLike}
 
 object WeaverResultLike {
 
-  def resultLike[A](loc: SourceLocation): ResultLike[A, IO[Expectations]] =
+  def resultLike[A](loc: SourceLocation, repr: Repr[A]): ResultLike[A, IO[Expectations]] =
     new ResultLike[A, IO[Expectations]] {
       type Assertion = IO[Expectations]
       def apply(result: () => Result[A]): Assertion =
-        IO(result()).map(resultToExpectations(_, loc))
+        IO(result()).map(resultToExpectations(_, loc, repr))
     }
 
   def resultToExpectations[A](
       result: Result[A],
-      loc: SourceLocation
+      loc: SourceLocation,
+      repr: Repr[A]
   ): Expectations = {
     result match {
       case _: Result.Success[?]     => Expectations.Helpers.success
@@ -46,7 +47,10 @@ object WeaverResultLike {
       case Result.Failure(found, snapshot) =>
         Expectations(
           Validated.invalidNel[ExpectationFailed, Unit](
-            new ExpectationFailed(Diff(found.toString, snapshot.toString), NonEmptyList.of(loc))
+            new ExpectationFailed(
+              Diff(repr.toSourceString(found), repr.toSourceString(snapshot)),
+              NonEmptyList.of(loc)
+            )
           )
         )
     }
