@@ -36,6 +36,9 @@ trait Repr[A] {
 
 object Repr extends ReprForAdt {
 
+  /** Summons a Repr instance. */
+  def apply[A](implicit repr: Repr[A]): Repr[A] = repr
+
   implicit val reprForString: Repr[String] = default
   implicit val reprForChar: Repr[Char]     = default
   implicit val reprForUnit: Repr[Unit]     = default
