@@ -210,4 +210,11 @@ trait ReprTestCases { self: FunSuite =>
     val input = (42, "hello", true)
     expect.same("""(42, "hello", true)""", repr.toSourceString(input))
   }
+
+  test("obtain Repr instance for type lambdas") {
+    type MyType[A] = Either[Int, A]
+    val repr                       = Repr.derived[MyType[String]]
+    val input: Either[Int, String] = Left(42)
+    expect.same("Left(value = 42)", repr.toSourceString(input))
+  }
 }

@@ -146,7 +146,15 @@ https://siriusxm.github.io/snapshot4s/inline-snapshots/#supported-data-types"""
   private def deriveSumRepr[A: c.WeakTypeTag](c: blackbox.Context): c.Expr[Repr[A]] = {
     import c.universe._
 
-    val tpe         = weakTypeOf[A]
+    // Remove any type aliases.
+    // For example in:
+    // {
+    //   type MyType[X] = Either[X, Int]
+    //   val repr = Repr.derived[MyType[Boolean]]
+    // }
+    // The `typeOrAlias` is `MyType[Boolean]`, but the `tpe` is `Either[A, B]`
+    val typeOrAlias = weakTypeOf[A]
+    val tpe         = typeOrAlias.baseType(typeOrAlias.typeSymbol.asType)
     val classSymbol = tpe.typeSymbol.asClass
 
     if (!classSymbol.isSealed) {
