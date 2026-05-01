@@ -86,7 +86,7 @@ assertInlineSnapshot(found = Person("Alice"), Person("Alice"))
 assertInlineSnapshot(found = Nil, List(Person("Alice"), Person("Bob")))
 ```
 
-## Unsupported data types
+### Unsupported data types
 
 It should not be used on variables.
 
@@ -102,3 +102,36 @@ It fails to compile for values that can't be represented as source code.
 assertInlineSnapshot(found = new Object(), new Object())
 ```
 
+## Updating snapshots when datatypes change in structure
+
+You can use scalafix to update your snapshots when a datatype changes in structure.
+
+For example, suppose you wish to add a `version` field to `Config`:
+
+```diff
+- case class Config(environment: String, region: String) 
++ case class Config(environment: String, region: String, version: String)
+```
+
+If you make the change as-is, your tests will fail to compile and you will not be able to update them with `snapshot4sPromote`.
+
+You can update your snapshots efficiently using the following steps:
+ - *Before* making the code change, replace all snapshot values with `???`. You can use the scalafix rule below.
+ - Make your code change.
+ - Your snapshot tests will compile. Regenerate snapshots with `sbt test` and `sbt snapshot4sPromote`.
+
+The following scalafix rule replaces all `expected` values with `???`:
+
+```scala
+import scalafix.v1._
+import scala.meta._
+
+class RegenerateSnapshots extends SemanticRule("RegenerateSnapshots") {
+  override def fix(implicit doc: SemanticDocument): Patch = {
+    doc.tree.collect { 
+      case tree @ q"assertInlineSnapshot($found, $expected)" =>
+        Patch.replaceTree(tree, s"assertInlineSnapshot($found, ???)")
+    }.asPatch
+  }
+}
+```
