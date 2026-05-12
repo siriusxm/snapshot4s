@@ -2,7 +2,7 @@ object Versions {
   val oslib                  = "0.11.8"
   val weaver                 = "0.12.0"
   val pprint                 = "0.9.6"
-  val munit                  = "1.2.4"
+  val munit                  = "1.3.0"
   val scalatest              = "3.2.19"
   val scalacCompatAnnotation = "0.1.4"
 }
