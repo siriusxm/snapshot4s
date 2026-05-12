@@ -28,6 +28,7 @@ object Snapshot4sPlugin extends AutoPlugin {
       settingKey[File]("The directory in which snapshot4s snapshot files are stored.")
     val snapshot4sDirectory =
       settingKey[File]("The directory in which snapshot4s results are stored prior to promotion.")
+    @transient
     val snapshot4sSourceGenerator =
       taskKey[Seq[File]]("Generate source files for snapshot4s testing.")
     val snapshot4sPromote = inputKey[Unit]("Update failing snapshot4s snapshot files.")
