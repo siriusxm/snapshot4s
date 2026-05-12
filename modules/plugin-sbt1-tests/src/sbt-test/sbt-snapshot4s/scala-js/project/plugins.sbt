@@ -1,4 +1,4 @@
-addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.20.2")
+addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.21.0")
 
 sys.props.get("plugin.version") match {
   case Some(x) =>
