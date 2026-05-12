@@ -1,4 +1,4 @@
-addSbtPlugin("org.scala-native" % "sbt-scala-native"          % "0.5.10")
+addSbtPlugin("org.scala-native" % "sbt-scala-native" % "0.5.11")
 
 sys.props.get("plugin.version") match {
   case Some(x) =>
