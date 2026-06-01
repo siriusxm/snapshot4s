@@ -28,9 +28,11 @@ object Snapshot4sPlugin extends AutoPlugin {
       settingKey[File]("The directory in which snapshot4s snapshot files are stored.")
     val snapshot4sDirectory =
       settingKey[File]("The directory in which snapshot4s results are stored prior to promotion.")
+    // Opt out of sbt 2 task caching: this task writes a managed source file as a side effect.
+    // If cached, sbt may reuse the returned Seq[File] without recreating the file after cleanup.
     @transient
-    val snapshot4sSourceGenerator =
-      taskKey[Seq[File]]("Generate source files for snapshot4s testing.")
+val snapshot4sSourceGenerator =
+taskKey[Seq[File]]("Generate source files for snapshot4s testing.")
     val snapshot4sPromote = inputKey[Unit]("Update failing snapshot4s snapshot files.")
   }
 
