@@ -7,7 +7,7 @@ lazy val root = (project in file("."))
     crossScalaVersions := Seq("3.3.1", "2.12.21", "2.13.18"),
     libraryDependencies ++= Seq(
       "com.siriusxm"  %% "snapshot4s-scalatest" % snapshot4sVersion % Test,
-      "org.scalatest" %% "scalatest"            % "3.2.19"          % Test
+      "org.scalatest" %% "scalatest"            % "3.2.20"          % Test
     )
   )
   .enablePlugins(Snapshot4sPlugin)

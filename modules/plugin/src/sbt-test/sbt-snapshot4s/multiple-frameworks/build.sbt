@@ -9,7 +9,7 @@ lazy val root = (project in file("."))
       "com.siriusxm"  %% "snapshot4s-weaver"    % snapshot4sVersion % Test,
       "com.siriusxm"  %% "snapshot4s-scalatest" % snapshot4sVersion % Test,
       "com.siriusxm"  %% "snapshot4s-munit"     % snapshot4sVersion % Test,
-      "org.scalatest" %% "scalatest"            % "3.2.19"          % Test
+      "org.scalatest" %% "scalatest"            % "3.2.20"          % Test
     )
   )
   .enablePlugins(Snapshot4sPlugin)
