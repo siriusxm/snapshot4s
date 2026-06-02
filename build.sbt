@@ -34,7 +34,7 @@ lazy val scalaVersions = Seq(
 )
 
 lazy val sbt1Version = "1.11.7"
-lazy val sbt2Version = "2.0.0-RC8"
+lazy val sbt2Version = "2.0.0-RC13"
 
 def scalaReflect(scalaVersion: String): List[ModuleID] =
   if (scalaVersion.startsWith("3.")) Nil
