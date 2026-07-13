@@ -79,6 +79,15 @@ trait ReprTestCases { self: FunSuite =>
     )
   }
 
+  test("Repr handles non-readable ASCII characters") {
+    val repr  = Repr[String]
+    val input = "\u001b["
+    expect.same(
+      "\"\\u001B[\"",
+      repr.toSourceString(input)
+    )
+  }
+
   test("Repr handles single field case class") {
     val repr  = Repr[SingleField]
     val input = SingleField(42)

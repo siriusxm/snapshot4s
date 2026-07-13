@@ -109,15 +109,14 @@ private[snapshot4s] object InlineRepr extends InlineReprCompat {
   private def printChar(
       c: Char
   ): String = c match {
-    case '"'      => "\\\""
-    case '\\'     => "\\\\"
-    case '\b'     => "\\b"
-    case '\f'     => "\\f"
-    case '\n'     => "\\n"
-    case '\r'     => "\\r"
-    case '\t'     => "\\t"
-    case '\u001B' => ""
-    case c        =>
+    case '"'  => "\\\""
+    case '\\' => "\\\\"
+    case '\b' => "\\b"
+    case '\f' => "\\f"
+    case '\n' => "\\n"
+    case '\r' => "\\r"
+    case '\t' => "\\t"
+    case c    =>
       val isNonReadableAscii = c < ' ' || c > '~'
       if (isNonReadableAscii && !Character.isLetter(c))
         "\\u%04x".format(c.toInt)
