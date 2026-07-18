@@ -1,13 +1,14 @@
 lazy val V = _root_.scalafix.sbt.BuildInfo
+
 inThisBuild(
   List(
-    organization := "com.siriusxm",
-    homepage := Some(url("https://github.com/siriusxm/snapshot4s")),
-    licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
-    scalaVersion := V.scala213,
+    organization      := "com.siriusxm",
+    homepage          := Some(url("https://github.com/siriusxm/snapshot4s")),
+    licenses          := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+    scalaVersion      := V.scala213,
     semanticdbEnabled := true,
     semanticdbIncludeInJar := true,
-    semanticdbVersion := scalafixSemanticdb.revision,
+    semanticdbVersion      := scalafixSemanticdb.revision,
     scalacOptions ++= List("-Yrangepos")
   )
 )
@@ -19,8 +20,7 @@ lazy val rules = project.settings(
 )
 
 lazy val input = project.settings(
-  (publish / skip) := true,
-
+  (publish / skip) := true
 )
 
 lazy val output = project.settings(
