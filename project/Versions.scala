@@ -5,5 +5,5 @@ object Versions {
   val munit                  = "1.3.4"
   val mill                   = "1.1.7"
   val scalatest              = "3.2.20"
-  val scalacCompatAnnotation = "0.1.4"
+  val scalacCompatAnnotation = "0.1.5"
 }
