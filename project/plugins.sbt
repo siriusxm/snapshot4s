@@ -4,7 +4,7 @@ resolvers += "Sonatype OSS Snapshots" at "https://s01.oss.sonatype.org/content/r
 
 addSbtPlugin("org.scalameta"    % "sbt-scalafmt"              % "2.6.1")
 addSbtPlugin("org.scalameta"    % "sbt-mdoc"                  % "2.9.0")
-addSbtPlugin("com.timushev.sbt" % "sbt-updates"               % "0.7.0")
+addSbtPlugin("com.timushev.sbt" % "sbt-updates"               % "0.7.1")
 addSbtPlugin("com.github.cb372" % "sbt-explicit-dependencies" % "0.3.1")
 addSbtPlugin("org.typelevel"    % "sbt-typelevel-scalafix"    % "0.8.6")
 addSbtPlugin("org.typelevel"    % "sbt-typelevel-settings"    % "0.8.6")
