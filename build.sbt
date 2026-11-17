@@ -25,7 +25,7 @@ lazy val buildInfoSettings: Seq[Setting[?]] = {
 lazy val scala3Version          = "3.3.8"
 lazy val scala213Version        = "2.13.18"
 lazy val sbt1PluginScalaVersion = "2.12.21"
-lazy val sbt2PluginScalaVersion = "3.8.4"
+lazy val sbt2PluginScalaVersion = "3.9.0"
 lazy val millScalaVersion       = "3.8.4"
 
 lazy val scalaVersions = Seq(
@@ -35,7 +35,7 @@ lazy val scalaVersions = Seq(
 )
 
 lazy val sbt1Version = "1.11.7"
-lazy val sbt2Version = "2.0.0-RC13"
+lazy val sbt2Version = "2.1.0"
 
 def scalaReflect(scalaVersion: String): List[ModuleID] =
   if (scalaVersion.startsWith("3.")) Nil
@@ -52,7 +52,14 @@ inThisBuild(
       tlGitHubDev("zainab-ali", "Zainab Ali")
     ),
     githubWorkflowOSes         := Seq("ubuntu-22.04", "windows-2025"),
-    githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
+    githubWorkflowJavaVersions := Seq(
+      JavaSpec.temurin("17"),
+      JavaSpec.temurin("21"),
+      JavaSpec.temurin("25")
+    ),
+    githubWorkflowGeneratedCI ~= (_.map { job =>
+      if (job.id == "publish") job.withJavas(List(JavaSpec.temurin("17"))) else job
+    }),
     githubWorkflowPublishTargetBranches += RefPredicate.Equals(Ref.Branch("main")),
     ThisBuild / githubWorkflowBuild ~= (_.flatMap { step =>
       if (step.name.contains("Test")) {
@@ -129,6 +136,13 @@ lazy val githubWorkflowTestSteps: Seq[WorkflowStep] = Seq(
 )
 
 lazy val pluginSettings = Seq(
+  scriptedSbt := (if (scalaBinaryVersion.value == "2.12") "1.13.1" else "2.1.0"),
+  scalacOptions ++= {
+    if (scalaBinaryVersion.value == "2.12") Seq("-Xsource:3") else Nil
+  },
+  tlJdkRelease := {
+    if (scalaBinaryVersion.value == "3") Some(17) else Some(8)
+  },
   sbtPluginPublishLegacyMavenStyle := false,
   scriptedLaunchOpts               := {
     scriptedLaunchOpts.value ++
